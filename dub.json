@@ -1,0 +1,11 @@
+{
+	"authors": [
+		"Soaku"
+	],
+	"copyright": "Copyright © 2021, Soaku",
+	"description": "My template for D applications",
+	"license": "BSL",
+	"name": "dtemplate",
+	"targetType": "executable",
+	"targetPath": "build"
+}
