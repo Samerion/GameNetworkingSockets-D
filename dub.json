@@ -3,9 +3,9 @@
 		"Soaku"
 	],
 	"copyright": "Copyright © 2021, Soaku",
-	"description": "My template for D applications",
-	"license": "BSL",
-	"name": "dtemplate",
-	"targetType": "executable",
+	"description": "Updated D bindings for GameNetworkingSockets",
+	"license": "BSD-3",
+	"name": "steam-gns-d",
+	"targetType": "library",
 	"targetPath": "build"
 }
