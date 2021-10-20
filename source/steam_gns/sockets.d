@@ -934,26 +934,26 @@ version (STEAMNETWORKINGSOCKETS_STANDALONELIB) {
 
     // Standalone lib.
     static assert(STEAMNETWORKINGSOCKETS_INTERFACE_VERSION[24] == '1', "Version mismatch");
-    ISteamNetworkingSockets* SteamNetworkingSockets_LibV11();
-    ISteamNetworkingSockets* SteamNetworkingSockets_Lib() {
+    extern (C) ISteamNetworkingSockets SteamNetworkingSockets_LibV11();
+    ISteamNetworkingSockets SteamNetworkingSockets_Lib() {
         return SteamNetworkingSockets_LibV11();
     }
 
     // If running in context of steam, we also define a gameserver instance.
     version (STEAMNETWORKINGSOCKETS_STEAM) {
-        ISteamNetworkingSockets* SteamGameServerNetworkingSockets_LibV11();
-        ISteamNetworkingSockets* SteamGameServerNetworkingSockets_Lib() {
+        extern (C) ISteamNetworkingSockets SteamGameServerNetworkingSockets_LibV11();
+        ISteamNetworkingSockets SteamGameServerNetworkingSockets_Lib() {
             return SteamGameServerNetworkingSockets_LibV11();
         }
     }
 
     version (STEAMNETWORKINGSOCKETS_STEAMAPI) { }
     else {
-        ISteamNetworkingSockets* SteamNetworkingSockets() {
+        ISteamNetworkingSockets SteamNetworkingSockets() {
             return SteamNetworkingSockets_LibV11();
         }
         version (STEAMNETWORKINGSOCKETS_STEAM) {
-            ISteamNetworkingSockets* SteamGameServerNetworkingSockets() {
+            ISteamNetworkingSockets SteamGameServerNetworkingSockets() {
                 return SteamGameServerNetworkingSockets_LibV11();
             }
         }
@@ -969,10 +969,10 @@ version (STEAMNETWORKINGSOCKETS_STEAMAPI) {
 
     version (STEAMNETWORKINGSOCKETS_STANDALONELIB) { }
     else {
-        ISteamNetworkingSockets* SteamNetworkingSockets() {
+        ISteamNetworkingSockets SteamNetworkingSockets() {
             return SteamNetworkingSockets_SteamAPI();
         }
-        ISteamNetworkingSockets* SteamGameServerNetworkingSockets() {
+        ISteamNetworkingSockets SteamGameServerNetworkingSockets() {
             return SteamGameServerNetworkingSockets_SteamAPI();
         }
     }

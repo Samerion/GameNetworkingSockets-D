@@ -251,7 +251,7 @@ public:
     /// This function is fast; it just does some logical tests on the IP and does
     /// not need to do any lookup operations.
     bool IsFakeIPv4(uint nIPv4 ) {
-        return GetIPv4FakeIPType( nIPv4 ) > ESteamNetworkingFakeIPType.k_ESteamNetworkingFakeIPType_NotFake;
+        return GetIPv4FakeIPType( nIPv4 ) > ESteamNetworkingFakeIPType.NotFake;
     }
     ESteamNetworkingFakeIPType GetIPv4FakeIPType(uint nIPv4);
 

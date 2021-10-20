@@ -72,22 +72,22 @@ enum ESteamNetworkingAvailability {
     // depends on of requests this resource, such as querying the status, attempting
     // to initiate a connection, receive a connection, etc.  If you do not take any
     // action at all, we do not automatically retry in the background.
-    k_ESteamNetworkingAvailability_CannotTry = -102,        // A dependent resource is missing, so this service is unavailable.  (E.g. we cannot talk to routers because Internet is down or we don't have the network config.)
-    k_ESteamNetworkingAvailability_Failed = -101,           // We have tried for enough time that we would expect to have been successful by now.  We have never been successful
-    k_ESteamNetworkingAvailability_Previously = -100,       // We tried and were successful at one time, but now it looks like we have a problem
+    CannotTry = -102,        // A dependent resource is missing, so this service is unavailable.  (E.g. we cannot talk to routers because Internet is down or we don't have the network config.)
+    Failed = -101,           // We have tried for enough time that we would expect to have been successful by now.  We have never been successful
+    Previously = -100,       // We tried and were successful at one time, but now it looks like we have a problem
 
-    k_ESteamNetworkingAvailability_Retrying = -10,      // We previously failed and are currently retrying
+    Retrying = -10,      // We previously failed and are currently retrying
 
     // Not a problem, but not ready either
-    k_ESteamNetworkingAvailability_NeverTried = 1,      // We don't know because we haven't ever checked/tried
-    k_ESteamNetworkingAvailability_Waiting = 2,         // We're waiting on a dependent resource to be acquired.  (E.g. we cannot obtain a cert until we are logged into Steam.  We cannot measure latency to relays until we have the network config.)
-    k_ESteamNetworkingAvailability_Attempting = 3,      // We're actively trying now, but are not yet successful.
+    NeverTried = 1,      // We don't know because we haven't ever checked/tried
+    Waiting = 2,         // We're waiting on a dependent resource to be acquired.  (E.g. we cannot obtain a cert until we are logged into Steam.  We cannot measure latency to relays until we have the network config.)
+    Attempting = 3,      // We're actively trying now, but are not yet successful.
 
-    k_ESteamNetworkingAvailability_Current = 100,           // Resource is online/available
+    Current = 100,           // Resource is online/available
 
 
-    k_ESteamNetworkingAvailability_Unknown = 0,         // Internal dummy/sentinel, or value is not applicable in this context
-    k_ESteamNetworkingAvailability__Force32bit = 0x7fffffff,
+    Unknown = 0,         // Internal dummy/sentinel, or value is not applicable in this context
+    _Force32bit = 0x7fffffff,
 
 }
 
@@ -102,12 +102,12 @@ enum ESteamNetworkingIdentityType {
     // Please note that if we parse a string that we don't recognize
     // but that appears reasonable, we will NOT use this type.  Instead
     // we'll use k_ESteamNetworkingIdentityType_UnknownType.
-    k_ESteamNetworkingIdentityType_Invalid = 0,
+    Invalid = 0,
 
     //
     // Basic platform-specific identifiers.
     //
-    k_ESteamNetworkingIdentityType_SteamID = 16, // 64-bit CSteamID
+    SteamID = 16, // 64-bit CSteamID
 
     //
     // Special identifiers.
@@ -123,24 +123,24 @@ enum ESteamNetworkingIdentityType {
     // We use the same type for either IPv4 or IPv6, and
     // the address is always store as IPv6.  We use IPv4
     // mapped addresses to handle IPv4.
-    k_ESteamNetworkingIdentityType_IPAddress = 1,
+    IPAddress = 1,
 
     // Generic string/binary blobs.  It's up to your app to interpret this.
     // This library can tell you if the remote host presented a certificate
     // signed by somebody you have chosen to trust, with this identity on it.
     // It's up to you to ultimately decide what this identity means.
-    k_ESteamNetworkingIdentityType_GenericString = 2,
-    k_ESteamNetworkingIdentityType_GenericBytes = 3,
+    GenericString = 2,
+    GenericBytes = 3,
 
     // This identity type is used when we parse a string that looks like is a
     // valid identity, just of a kind that we don't recognize.  In this case, we
     // can often still communicate with the peer!  Allowing such identities
     // for types we do not recognize useful is very useful for forward
     // compatibility.
-    k_ESteamNetworkingIdentityType_UnknownType = 4,
+    UnknownType = 4,
 
     // Make sure this enum is stored in an int.
-    k_ESteamNetworkingIdentityType__Force32bit = 0x7fffffff,
+    _Force32bit = 0x7fffffff,
 
 }
 
@@ -148,45 +148,31 @@ enum ESteamNetworkingIdentityType {
 /// older code that assumed all hosts will have an IPv4 address
 enum ESteamNetworkingFakeIPType {
 
-    k_ESteamNetworkingFakeIPType_Invalid, // Error, argument was not even an IP address, etc.
-    k_ESteamNetworkingFakeIPType_NotFake, // Argument was a valid IP, but was not from the reserved "fake" range
-    k_ESteamNetworkingFakeIPType_GlobalIPv4, // Globally unique (for a given app) IPv4 address.  Address space managed by Steam
-    k_ESteamNetworkingFakeIPType_LocalIPv4, // Locally unique IPv4 address.  Address space managed by the local process.  For internal use only; should not be shared!
+    Invalid, // Error, argument was not even an IP address, etc.
+    NotFake, // Argument was a valid IP, but was not from the reserved "fake" range
+    GlobalIPv4, // Globally unique (for a given app) IPv4 address.  Address space managed by Steam
+    LocalIPv4, // Locally unique IPv4 address.  Address space managed by the local process.  For internal use only; should not be shared!
 
-    k_ESteamNetworkingFakeIPType__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
+
+
+private {
+    void SteamNetworkingIPAddr_ToString(const SteamNetworkingIPAddr* pAddr, char* buf, size_t cbBuf, bool bWithPort);
+    bool SteamNetworkingIPAddr_ParseString(SteamNetworkingIPAddr* pAddr, const(char*) pszStr);
+    ESteamNetworkingFakeIPType SteamNetworkingIPAddr_GetFakeIPType(const(SteamNetworkingIPAddr)* pAddr);
+    void SteamNetworkingIdentity_ToString(const(SteamNetworkingIdentity)* pIdentity, char* buf, size_t cbBuf);
+    bool SteamNetworkingIdentity_ParseString(const(SteamNetworkingIdentity)* pIdentity, size_t sizeofIdentity,
+        const(char)* pszStr);
+
+}
+
 
 /// Store an IP and port.  IPv6 is always used; IPv4 is represented using
 /// "IPv4-mapped" addresses: IPv4 aa.bb.cc.dd => IPv6 ::ffff:aabb:ccdd
 /// (RFC 4291 section 2.5.5.2.)
 struct SteamNetworkingIPAddr {
-
-    void Clear(); // Set everything to zero.  E.g. [::]:0
-    bool IsIPv6AllZeros() const;  // Return true if the IP is ::0.  (Doesn't check port.)
-    void SetIPv6(const ubyte* ipv6, ushort nPort); // Set IPv6 address.  IP is interpreted as bytes, so there are no endian issues.  (Same as inaddr_in6.)  The IP can be a mapped IPv4 address
-    void SetIPv4(uint nIP, ushort nPort); // Sets to IPv4 mapped address.  IP and port are in host byte order.
-    bool IsIPv4() const; // Return true if IP is mapped IPv4
-    uint GetIPv4() const; // Returns IP in host byte order (e.g. aa.bb.cc.dd as 0xaabbccdd).  Returns 0 if IP is not mapped IPv4.
-    void SetIPv6LocalHost(ushort nPort = 0); // Set to the IPv6 localhost address ::1, and the specified port.
-    bool IsLocalHost() const; // Return true if this identity is localhost.  (Either IPv6 ::1, or IPv4 127.0.0.1)
-
-    // Max length of the buffer needed to hold IP formatted using ToString, including '\0'
-    // ([0123:4567:89ab:cdef:0123:4567:89ab:cdef]:12345)
-    enum k_cchMaxString = 48;
-
-    /// Print to a string, with or without the port.  Mapped IPv4 addresses are printed
-    /// as dotted decimal (12.34.56.78), otherwise this will print the canonical
-    /// form according to RFC5952.  If you include the port, IPv6 will be surrounded by
-    /// brackets, e.g. [::1:2]:80.  Your buffer should be at least k_cchMaxString bytes
-    /// to avoid truncation
-    ///
-    /// See also SteamNetworkingIdentityRender
-    void ToString(char* buf, size_t cbBuf, bool bWithPort) const;
-
-    /// Parse an IP address and optional port.  If a port is not present, it is set to 0.
-    /// (This means that you cannot tell if a zero port was explicitly specified.)
-    bool ParseString(const char* pszStr);
 
     /// RFC4038, section 4.2
     struct IPv4MappedAddress {
@@ -202,6 +188,63 @@ struct SteamNetworkingIPAddr {
     };
     ushort m_port; // Host byte order
 
+    /// Set everything to zero.  E.g. [::]:0
+    void Clear() {
+
+        m_ipv6 = 0;
+        m_port = 0;
+
+    }
+
+    /// Return true if the IP is ::0.  (Doesn't check port.)
+    bool IsIPv6AllZeros() const {
+
+        import std.algorithm;
+
+        return m_ipv6[].all!q{ a == 0 };
+
+    }
+
+    //void SetIPv6(const(ubyte)* ipv6, ushort nPort); // Set IPv6 address.  IP is interpreted as bytes, so there are no endian issues.  (Same as inaddr_in6.)  The IP can be a mapped IPv4 address
+    //void SetIPv4(uint nIP, ushort nPort); // Sets to IPv4 mapped address.  IP and port are in host byte order.
+
+    /// Return true if IP is mapped IPv4
+    bool IsIPv4() const {
+
+        return m_ipv4.m_8zeros == 0 && m_ipv4.m_0000 == 0 && m_ipv4.m_ffff == 0xffff;
+
+    }
+    //uint GetIPv4() const; // Returns IP in host byte order (e.g. aa.bb.cc.dd as 0xaabbccdd).  Returns 0 if IP is not mapped IPv4.
+    //void SetIPv6LocalHost(ushort nPort = 0); // Set to the IPv6 localhost address ::1, and the specified port.
+
+    /// Return true if this identity is localhost. (Either IPv6 ::1, or IPv4 127.0.0.1)
+    //bool IsLocalHost() const;
+
+    // Max length of the buffer needed to hold IP formatted using ToString, including '\0'
+    // ([0123:4567:89ab:cdef:0123:4567:89ab:cdef]:12345)
+    enum k_cchMaxString = 48;
+
+    /// Print to a string, with or without the port.  Mapped IPv4 addresses are printed
+    /// as dotted decimal (12.34.56.78), otherwise this will print the canonical
+    /// form according to RFC5952.  If you include the port, IPv6 will be surrounded by
+    /// brackets, e.g. [::1:2]:80.  Your buffer should be at least k_cchMaxString bytes
+    /// to avoid truncation
+    ///
+    /// See also SteamNetworkingIdentityRender
+    void ToString(char* buf, size_t cbBuf, bool bWithPort) const {
+
+        SteamNetworkingIPAddr_ToString(&this, buf, cbBuf, bWithPort);
+
+    }
+
+    /// Parse an IP address and optional port.  If a port is not present, it is set to 0.
+    /// (This means that you cannot tell if a zero port was explicitly specified.)
+    bool ParseString(const(char)* pszStr) {
+
+        return SteamNetworkingIPAddr_ParseString(&this, pszStr);
+
+    }
+
     /// See if two addresses are identical
     bool opEquals(const ref SteamNetworkingIPAddr x) const;
 
@@ -211,7 +254,7 @@ struct SteamNetworkingIPAddr {
 
     /// Return true if we are a FakeIP
     bool IsFakeIP() const {
-        return GetFakeIPType() > ESteamNetworkingFakeIPType.k_ESteamNetworkingFakeIPType_NotFake;
+        return GetFakeIPType() > ESteamNetworkingFakeIPType.NotFake;
     }
 
 }
@@ -245,7 +288,7 @@ struct SteamNetworkingIdentity {
 
     ESteamNetworkingFakeIPType GetFakeIPType() const;
     bool IsFakeIP() const {
-        return GetFakeIPType() > ESteamNetworkingFakeIPType.k_ESteamNetworkingFakeIPType_NotFake;
+        return GetFakeIPType() > ESteamNetworkingFakeIPType.NotFake;
     }
 
     // "localhost" is equivalent for many purposes to "anonymous."  Our remote
@@ -311,7 +354,7 @@ enum ESteamNetworkingConnectionState {
 
     /// Dummy value used to indicate an error condition in the API.
     /// Specified connection doesn't exist or has already been closed.
-    k_ESteamNetworkingConnectionState_None = 0,
+    None = 0,
 
     /// We are trying to establish whether peers can talk to each other,
     /// whether they WANT to talk to each other, perform basic auth,
@@ -336,7 +379,7 @@ enum ESteamNetworkingConnectionState {
     /// established, any queued messages will be discarded immediately.
     /// (We will not attempt to flush the queue and confirm delivery to the
     /// remote host, which ordinarily happens when a connection is closed.)
-    k_ESteamNetworkingConnectionState_Connecting = 1,
+    Connecting = 1,
 
     /// Some connection types use a back channel or trusted 3rd party
     /// for earliest communication.  If the server accepts the connection,
@@ -344,7 +387,7 @@ enum ESteamNetworkingConnectionState {
     /// state, we still have not yet established an end-to-end route (through
     /// the relay network), and so if you send any messages unreliable, they
     /// are going to be discarded.
-    k_ESteamNetworkingConnectionState_FindingRoute = 2,
+    FindingRoute = 2,
 
     /// We've received communications from our peer (and we know
     /// who they are) and are all good.  If you close the connection now,
@@ -352,7 +395,7 @@ enum ESteamNetworkingConnectionState {
     /// has not been acknowledged by the peer.  (But note that this happens
     /// from within the application process, so unlike a TCP connection, you are
     /// not totally handing it off to the operating system to deal with it.)
-    k_ESteamNetworkingConnectionState_Connected = 3,
+    Connected = 3,
 
     /// Connection has been closed by our peer, but not closed locally.
     /// The connection still exists from an API perspective.  You must close the
@@ -361,7 +404,7 @@ enum ESteamNetworkingConnectionState {
     /// except to close it.
     ///
     /// This stats is similar to CLOSE_WAIT in the TCP state machine.
-    k_ESteamNetworkingConnectionState_ClosedByPeer = 4,
+    ClosedByPeer = 4,
 
     /// A disruption in the connection has been detected locally.  (E.g. timeout,
     /// local internet connection disrupted, etc.)
@@ -371,7 +414,7 @@ enum ESteamNetworkingConnectionState {
     ///
     /// Attempts to send further messages will fail.  Any remaining received messages
     /// in the queue are available.
-    k_ESteamNetworkingConnectionState_ProblemDetectedLocally = 5,
+    ProblemDetectedLocally = 5,
 
 //
 // The following values are used internally and will not be returned by any API.
@@ -386,7 +429,7 @@ enum ESteamNetworkingConnectionState {
     /// get a packet from them, we can send them the appropriate packets so that they can
     /// know why the connection was closed (and not have to rely on a timeout, which makes
     /// it appear as if something is wrong).
-    k_ESteamNetworkingConnectionState_FinWait = -1,
+    FinWait = -1,
 
     /// We've disconnected on our side, and from an API perspective the connection is closed.
     /// No more data may be sent or received.  From a network perspective, however, on the wire,
@@ -402,12 +445,12 @@ enum ESteamNetworkingConnectionState {
     /// read it back.  Typically this is not a problem, as application protocols that utilize
     /// the lingering functionality are designed for the remote host to wait for the response
     /// before sending any more data.
-    k_ESteamNetworkingConnectionState_Linger = -2,
+    Linger = -2,
 
     /// Connection is completely inactive and ready to be destroyed
-    k_ESteamNetworkingConnectionState_Dead = -3,
+    Dead = -3,
 
-    k_ESteamNetworkingConnectionState__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
@@ -416,7 +459,7 @@ enum ESteamNetworkingConnectionState {
 /// of the problem.
 enum ESteamNetConnectionEnd {
     // Invalid/sentinel value
-    k_ESteamNetConnectionEnd_Invalid = 0,
+    Invalid = 0,
 
     //
     // Application codes.  These are the values you will pass to
@@ -436,19 +479,19 @@ enum ESteamNetConnectionEnd {
     // 1xxx: Application ended the connection in a "usual" manner.
     //       E.g.: user intentionally disconnected from the server,
     //             gameplay ended normally, etc
-    k_ESteamNetConnectionEnd_App_Min = 1000,
-        k_ESteamNetConnectionEnd_App_Generic = k_ESteamNetConnectionEnd_App_Min,
+    App_Min = 1000,
+        App_Generic = App_Min,
         // Use codes in this range for "normal" disconnection
-    k_ESteamNetConnectionEnd_App_Max = 1999,
+    App_Max = 1999,
 
     // 2xxx: Application ended the connection in some sort of exceptional
     //       or unusual manner that might indicate a bug or configuration
     //       issue.
     //
-    k_ESteamNetConnectionEnd_AppException_Min = 2000,
-        k_ESteamNetConnectionEnd_AppException_Generic = k_ESteamNetConnectionEnd_AppException_Min,
+    AppException_Min = 2000,
+        AppException_Generic = AppException_Min,
         // Use codes in this range for "unusual" disconnection
-    k_ESteamNetConnectionEnd_AppException_Max = 2999,
+    AppException_Max = 2999,
 
     //
     // System codes.  These will be returned by the system when
@@ -459,10 +502,10 @@ enum ESteamNetConnectionEnd {
 
     // 3xxx: Connection failed or ended because of problem with the
     //       local host or their connection to the Internet.
-    k_ESteamNetConnectionEnd_Local_Min = 3000,
+    Local_Min = 3000,
 
         // You cannot do what you want to do because you're running in offline mode.
-        k_ESteamNetConnectionEnd_Local_OfflineMode = 3001,
+        Local_OfflineMode = 3001,
 
         // We're having trouble contacting many (perhaps all) relays.
         // Since it's unlikely that they all went offline at once, the best
@@ -475,21 +518,21 @@ enum ESteamNetConnectionEnd {
         //
         // * We don't have any recent successful communication with any relay.
         // * We have evidence of recent failures to communicate with multiple relays.
-        k_ESteamNetConnectionEnd_Local_ManyRelayConnectivity = 3002,
+        Local_ManyRelayConnectivity = 3002,
 
         // A hosted server is having trouble talking to the relay
         // that the client was using, so the problem is most likely
         // on our end
-        k_ESteamNetConnectionEnd_Local_HostedServerPrimaryRelay = 3003,
+        Local_HostedServerPrimaryRelay = 3003,
 
         // We're not able to get the SDR network config.  This is
         // *almost* always a local issue, since the network config
         // comes from the CDN, which is pretty darn reliable.
-        k_ESteamNetConnectionEnd_Local_NetworkConfig = 3004,
+        Local_NetworkConfig = 3004,
 
         // Steam rejected our request because we don't have rights
         // to do this.
-        k_ESteamNetConnectionEnd_Local_Rights = 3005,
+        Local_Rights = 3005,
 
         // ICE P2P rendezvous failed because we were not able to
         // determine our "public" address (e.g. reflexive address via STUN)
@@ -497,26 +540,26 @@ enum ESteamNetConnectionEnd {
         // If relay fallback is available (it always is on Steam), then
         // this is only used internally and will not be returned as a high
         // level failure.
-        k_ESteamNetConnectionEnd_Local_P2P_ICE_NoPublicAddresses = 3006,
+        Local_P2P_ICE_NoPublicAddresses = 3006,
 
-    k_ESteamNetConnectionEnd_Local_Max = 3999,
+    Local_Max = 3999,
 
     // 4xxx: Connection failed or ended, and it appears that the
     //       cause does NOT have to do with the local host or their
     //       connection to the Internet.  It could be caused by the
     //       remote host, or it could be somewhere in between.
-    k_ESteamNetConnectionEnd_Remote_Min = 4000,
+    Remote_Min = 4000,
 
         // The connection was lost, and as far as we can tell our connection
         // to relevant services (relays) has not been disrupted.  This doesn't
         // mean that the problem is "their fault", it just means that it doesn't
         // appear that we are having network issues on our end.
-        k_ESteamNetConnectionEnd_Remote_Timeout = 4001,
+        Remote_Timeout = 4001,
 
         // Something was invalid with the cert or crypt handshake
         // info you gave me, I don't understand or like your key types,
         // etc.
-        k_ESteamNetConnectionEnd_Remote_BadCrypt = 4002,
+        Remote_BadCrypt = 4002,
 
         // You presented me with a cert that was I was able to parse
         // and *technically* we could use encrypted communication.
@@ -527,7 +570,7 @@ enum ESteamNetConnectionEnd {
         // - The cert doesn't was appropriately restricted by app, user, time, data center, etc.
         // - The cert wasn't issued to you.
         // - etc
-        k_ESteamNetConnectionEnd_Remote_BadCert = 4003,
+        Remote_BadCert = 4003,
 
         // These will never be returned
         //k_ESteamNetConnectionEnd_Remote_NotLoggedIn_DEPRECATED = 4004,
@@ -535,7 +578,7 @@ enum ESteamNetConnectionEnd {
 
         // Something wrong with the protocol version you are using.
         // (Probably the code you are running is too old.)
-        k_ESteamNetConnectionEnd_Remote_BadProtocolVersion = 4006,
+        Remote_BadProtocolVersion = 4006,
 
         // NAT punch failed failed because we never received any public
         // addresses from the remote host.  (But we did receive some
@@ -544,36 +587,36 @@ enum ESteamNetConnectionEnd {
         // If relay fallback is available (it always is on Steam), then
         // this is only used internally and will not be returned as a high
         // level failure.
-        k_ESteamNetConnectionEnd_Remote_P2P_ICE_NoPublicAddresses = 4007,
+        Remote_P2P_ICE_NoPublicAddresses = 4007,
 
-    k_ESteamNetConnectionEnd_Remote_Max = 4999,
+    Remote_Max = 4999,
 
     // 5xxx: Connection failed for some other reason.
-    k_ESteamNetConnectionEnd_Misc_Min = 5000,
+    Misc_Min = 5000,
 
         // A failure that isn't necessarily the result of a software bug,
         // but that should happen rarely enough that it isn't worth specifically
         // writing UI or making a localized message for.
         // The debug string should contain further details.
-        k_ESteamNetConnectionEnd_Misc_Generic = 5001,
+        Misc_Generic = 5001,
 
         // Generic failure that is most likely a software bug.
-        k_ESteamNetConnectionEnd_Misc_InternalError = 5002,
+        Misc_InternalError = 5002,
 
         // The connection to the remote host timed out, but we
         // don't know if the problem is on our end, in the middle,
         // or on their end.
-        k_ESteamNetConnectionEnd_Misc_Timeout = 5003,
+        Misc_Timeout = 5003,
 
         //k_ESteamNetConnectionEnd_Misc_RelayConnectivity_DEPRECATED = 5004,
 
         // There's some trouble talking to Steam.
-        k_ESteamNetConnectionEnd_Misc_SteamConnectivity = 5005,
+        Misc_SteamConnectivity = 5005,
 
         // A server in a dedicated hosting situation has no relay sessions
         // active with which to talk back to a client.  (It's the client's
         // job to open and maintain those sessions.)
-        k_ESteamNetConnectionEnd_Misc_NoRelaySessionsToClient = 5006,
+        Misc_NoRelaySessionsToClient = 5006,
 
         // While trying to initiate a connection, we never received
         // *any* communication from the peer.
@@ -581,14 +624,14 @@ enum ESteamNetConnectionEnd {
 
         // P2P rendezvous failed in a way that we don't have more specific
         // information
-        k_ESteamNetConnectionEnd_Misc_P2P_Rendezvous = 5008,
+        Misc_P2P_Rendezvous = 5008,
 
         // NAT punch failed, probably due to NAT/firewall configuration.
         //
         // If relay fallback is available (it always is on Steam), then
         // this is only used internally and will not be returned as a high
         // level failure.
-        k_ESteamNetConnectionEnd_Misc_P2P_NAT_Firewall = 5009,
+        Misc_P2P_NAT_Firewall = 5009,
 
         // Our peer replied that it has no record of the connection.
         // This should not happen ordinarily, but can happen in a few
@@ -603,11 +646,11 @@ enum ESteamNetConnectionEnd {
         // - The peer thinks that we have closed the connection for some
         //   reason (perhaps a bug), and believes that is it is
         //   acknowledging our closure.
-        k_ESteamNetConnectionEnd_Misc_PeerSentNoConnection = 5010,
+        Misc_PeerSentNoConnection = 5010,
 
-    k_ESteamNetConnectionEnd_Misc_Max = 5999,
+    Misc_Max = 5999,
 
-    k_ESteamNetConnectionEnd__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
@@ -841,7 +884,11 @@ struct SteamNetworkingMessage_t {
 
     /// You MUST call this when you're done with the object,
     /// to free up memory, etc.
-    void Release();
+    void Release() {
+
+        m_pfnRelease(&this);
+
+    }
 
     // For code compatibility, some accessors
     uint GetSize() const { return m_cbSize; }
@@ -1008,59 +1055,59 @@ enum ESteamNetworkingConfigScope {
     /// have global scope, and you may be able to just change the global defaults.  If you
     /// need different settings per connection (for example), then you will need to set those
     /// options at the more specific scope.
-    k_ESteamNetworkingConfig_Global = 1,
+    Global = 1,
 
     /// Some options are specific to a particular interface.  Note that all connection
     /// and listen socket settings can also be set at the interface level, and they will
     /// apply to objects created through those interfaces.
-    k_ESteamNetworkingConfig_SocketsInterface = 2,
+    SocketsInterface = 2,
 
     /// Options for a listen socket.  Listen socket options can be set at the interface layer,
     /// if  you have multiple listen sockets and they all use the same options.
     /// You can also set connection options on a listen socket, and they set the defaults
     /// for all connections accepted through this listen socket.  (They will be used if you don't
     /// set a connection option.)
-    k_ESteamNetworkingConfig_ListenSocket = 3,
+    ListenSocket = 3,
 
     /// Options for a specific connection.
-    k_ESteamNetworkingConfig_Connection = 4,
+    Connection = 4,
 
-    k_ESteamNetworkingConfigScope__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
 // Different configuration values have different data types
 enum ESteamNetworkingConfigDataType {
 
-    k_ESteamNetworkingConfig_Int32 = 1,
-    k_ESteamNetworkingConfig_Int64 = 2,
-    k_ESteamNetworkingConfig_Float = 3,
-    k_ESteamNetworkingConfig_String = 4,
-    k_ESteamNetworkingConfig_Ptr = 5,
+    Int32 = 1,
+    Int64 = 2,
+    Float = 3,
+    String = 4,
+    Ptr = 5,
 
-    k_ESteamNetworkingConfigDataType__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
 /// Configuration options
 enum ESteamNetworkingConfigValue {
 
-    k_ESteamNetworkingConfig_Invalid = 0,
+    Invalid = 0,
 
 //
 // Connection options
 //
 
     /// [connection int32] Timeout value (in ms) to use when first connecting
-    k_ESteamNetworkingConfig_TimeoutInitial = 24,
+    TimeoutInitial = 24,
 
     /// [connection int32] Timeout value (in ms) to use after connection is established
-    k_ESteamNetworkingConfig_TimeoutConnected = 25,
+    TimeoutConnected = 25,
 
     /// [connection int32] Upper limit of buffered pending bytes to be sent,
     /// if this is reached SendMessage will return k_EResultLimitExceeded
     /// Default is 512k (524288 bytes)
-    k_ESteamNetworkingConfig_SendBufferSize = 9,
+    SendBufferSize = 9,
 
     /// [connection int64] Get/set userdata as a configuration option.
     /// The default value is -1.   You may want to set the user data as
@@ -1095,13 +1142,13 @@ enum ESteamNetworkingConfigValue {
     /// - Fetch the userdata from the connection in your callback
     ///   using ISteamNetworkingSockets::GetConnectionUserData, to
     //    ensure you have the current value.
-    k_ESteamNetworkingConfig_ConnectionUserData = 40,
+    ConnectionUserData = 40,
 
     /// [connection int32] Minimum/maximum send rate clamp, 0 is no limit.
     /// This value will control the min/max allowed sending rate that
     /// bandwidth estimation is allowed to reach.  Default is 0 (no-limit)
-    k_ESteamNetworkingConfig_SendRateMin = 10,
-    k_ESteamNetworkingConfig_SendRateMax = 11,
+    SendRateMin = 10,
+    SendRateMax = 11,
 
     /// [connection int32] Nagle time, in microseconds.  When SendMessage is called, if
     /// the outgoing message is less than the size of the MTU, it will be
@@ -1110,7 +1157,7 @@ enum ESteamNetworkingConfigValue {
     /// coalesced into a single packet.
     /// See historical RFC 896.  Value is in microseconds.
     /// Default is 5000us (5ms).
-    k_ESteamNetworkingConfig_NagleTime = 12,
+    NagleTime = 12,
 
     /// [connection int32] Don't automatically fail IP connections that don't have
     /// strong auth.  On clients, this means we will attempt the connection even if
@@ -1120,16 +1167,16 @@ enum ESteamNetworkingConfigValue {
     ///
     /// This is a dev configuration value, and you should not let users modify it in
     /// production.
-    k_ESteamNetworkingConfig_IP_AllowWithoutAuth = 23,
+    IP_AllowWithoutAuth = 23,
 
     /// [connection int32] Do not send UDP packets with a payload of
     /// larger than N bytes.  If you set this, k_ESteamNetworkingConfig_MTU_DataSize
     /// is automatically adjusted
-    k_ESteamNetworkingConfig_MTU_PacketSize = 32,
+    MTU_PacketSize = 32,
 
     /// [connection int32] (read only) Maximum message size you can send that
     /// will not fragment, based on k_ESteamNetworkingConfig_MTU_PacketSize
-    k_ESteamNetworkingConfig_MTU_DataSize = 33,
+    MTU_DataSize = 33,
 
     /// [connection int32] Allow unencrypted (and unauthenticated) communication.
     /// 0: Not allowed (the default)
@@ -1140,7 +1187,7 @@ enum ESteamNetworkingConfigValue {
     /// This is a dev configuration value, since its purpose is to disable encryption.
     /// You should not let users modify it in production.  (But note that it requires
     /// the peer to also modify their value in order for encryption to be disabled.)
-    k_ESteamNetworkingConfig_Unencrypted = 34,
+    Unencrypted = 34,
 
     /// [connection int32] Set this to 1 on outbound connections and listen sockets,
     /// to enable "symmetric connect mode", which is useful in the following
@@ -1226,7 +1273,7 @@ enum ESteamNetworkingConfigValue {
     /// local host has not made any outbound requests.  (In general, such duplicate
     /// requests from a peer are ignored internally and will not be visible to the
     /// application code.  The previous connection must be closed or resolved first.)
-    k_ESteamNetworkingConfig_SymmetricConnect = 37,
+    SymmetricConnect = 37,
 
     /// [connection int32] For connection types that use "virtual ports", this can be used
     /// to assign a local virtual port.  For incoming connections, this will always be the
@@ -1241,11 +1288,11 @@ enum ESteamNetworkingConfigValue {
     /// You can also read back this value on listen sockets.
     ///
     /// This value should not be read or written in any other context.
-    k_ESteamNetworkingConfig_LocalVirtualPort = 38,
+    LocalVirtualPort = 38,
 
     /// [connection int32] True to enable diagnostics reporting through
     /// generic platform UI.  (Only available on Steam.)
-    k_ESteamNetworkingConfig_EnableDiagnosticsUI = 46,
+    EnableDiagnosticsUI = 46,
 
 //
 // Simulating network conditions
@@ -1257,33 +1304,33 @@ enum ESteamNetworkingConfigValue {
     /// [global float, 0--100] Randomly discard N pct of packets instead of sending/recv
     /// This is a global option only, since it is applied at a low level
     /// where we don't have much context
-    k_ESteamNetworkingConfig_FakePacketLoss_Send = 2,
-    k_ESteamNetworkingConfig_FakePacketLoss_Recv = 3,
+    FakePacketLoss_Send = 2,
+    FakePacketLoss_Recv = 3,
 
     /// [global int32].  Delay all outbound/inbound packets by N ms
-    k_ESteamNetworkingConfig_FakePacketLag_Send = 4,
-    k_ESteamNetworkingConfig_FakePacketLag_Recv = 5,
+    FakePacketLag_Send = 4,
+    FakePacketLag_Recv = 5,
 
     /// [global float] 0-100 Percentage of packets we will add additional delay
     /// to (causing them to be reordered)
-    k_ESteamNetworkingConfig_FakePacketReorder_Send = 6,
-    k_ESteamNetworkingConfig_FakePacketReorder_Recv = 7,
+    FakePacketReorder_Send = 6,
+    FakePacketReorder_Recv = 7,
 
     /// [global int32] Extra delay, in ms, to apply to reordered packets.
-    k_ESteamNetworkingConfig_FakePacketReorder_Time = 8,
+    FakePacketReorder_Time = 8,
 
     /// [global float 0--100] Globally duplicate some percentage of packets we send
-    k_ESteamNetworkingConfig_FakePacketDup_Send = 26,
-    k_ESteamNetworkingConfig_FakePacketDup_Recv = 27,
+    FakePacketDup_Send = 26,
+    FakePacketDup_Recv = 27,
 
     /// [global int32] Amount of delay, in ms, to delay duplicated packets.
     /// (We chose a random delay between 0 and this value)
-    k_ESteamNetworkingConfig_FakePacketDup_TimeMax = 28,
+    FakePacketDup_TimeMax = 28,
 
     /// [global int32] Trace every UDP packet, similar to Wireshark or tcpdump.
     /// Value is max number of bytes to dump.  -1 disables tracing.
     // 0 only traces the info but no actual data bytes
-    k_ESteamNetworkingConfig_PacketTraceMaxBytes = 41,
+    PacketTraceMaxBytes = 41,
 
 
     // [global int32] Global UDP token bucket rate limits.
@@ -1294,10 +1341,10 @@ enum ESteamNetworkingConfigValue {
     // Rate=0 disables the limiter entirely, which is the default.
     // Burst=0 disables burst.  (This is not realistic.  A
     // burst of at least 4K is recommended; the default is higher.)
-    k_ESteamNetworkingConfig_FakeRateLimit_Send_Rate = 42,
-    k_ESteamNetworkingConfig_FakeRateLimit_Send_Burst = 43,
-    k_ESteamNetworkingConfig_FakeRateLimit_Recv_Rate = 44,
-    k_ESteamNetworkingConfig_FakeRateLimit_Recv_Burst = 45,
+    FakeRateLimit_Send_Rate = 42,
+    FakeRateLimit_Send_Burst = 43,
+    FakeRateLimit_Recv_Rate = 44,
+    FakeRateLimit_Recv_Burst = 45,
 
 //
 // Callbacks
@@ -1335,41 +1382,41 @@ enum ESteamNetworkingConfigValue {
     ///
     /// If all connections and listen sockets can use the same callback, the simplest
     /// method is to set it globally before you create any listen sockets or connections.
-    k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged = 201,
+    Callback_ConnectionStatusChanged = 201,
 
     /// [global FnSteamNetAuthenticationStatusChanged] Callback that will be invoked
     /// when our auth state changes.  If you use this, install the callback before creating
     /// any connections or listen sockets, and don't change it.
     /// See: ISteamNetworkingUtils::SetGlobalCallback_SteamNetAuthenticationStatusChanged
-    k_ESteamNetworkingConfig_Callback_AuthStatusChanged = 202,
+    Callback_AuthStatusChanged = 202,
 
     /// [global FnSteamRelayNetworkStatusChanged] Callback that will be invoked
     /// when our auth state changes.  If you use this, install the callback before creating
     /// any connections or listen sockets, and don't change it.
     /// See: ISteamNetworkingUtils::SetGlobalCallback_SteamRelayNetworkStatusChanged
-    k_ESteamNetworkingConfig_Callback_RelayNetworkStatusChanged = 203,
+    Callback_RelayNetworkStatusChanged = 203,
 
     /// [global FnSteamNetworkingMessagesSessionRequest] Callback that will be invoked
     /// when a peer wants to initiate a SteamNetworkingMessagesSessionRequest.
     /// See: ISteamNetworkingUtils::SetGlobalCallback_MessagesSessionRequest
-    k_ESteamNetworkingConfig_Callback_MessagesSessionRequest = 204,
+    Callback_MessagesSessionRequest = 204,
 
     /// [global FnSteamNetworkingMessagesSessionFailed] Callback that will be invoked
     /// when a session you have initiated, or accepted either fails to connect, or loses
     /// connection in some unexpected way.
     /// See: ISteamNetworkingUtils::SetGlobalCallback_MessagesSessionFailed
-    k_ESteamNetworkingConfig_Callback_MessagesSessionFailed = 205,
+    Callback_MessagesSessionFailed = 205,
 
     /// [global FnSteamNetworkingSocketsCreateConnectionSignaling] Callback that will
     /// be invoked when we need to create a signaling object for a connection
     /// initiated locally.  See: ISteamNetworkingSockets::ConnectP2P,
     /// ISteamNetworkingMessages.
-    k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling = 206,
+    Callback_CreateConnectionSignaling = 206,
 
     /// [global FnSteamNetworkingFakeIPResult] Callback that's invoked when
     /// a FakeIP allocation finishes.  See: ISteamNetworkingSockets::BeginAsyncRequestFakeIP,
     /// ISteamNetworkingUtils::SetGlobalCallback_FakeIPResult
-    k_ESteamNetworkingConfig_Callback_FakeIPResult = 207,
+    Callback_FakeIPResult = 207,
 
 //
 // P2P connection settings
@@ -1390,21 +1437,21 @@ enum ESteamNetworkingConfigValue {
     /// for NAT piercing.  If you set this to an empty string, NAT piercing will
     /// not be attempted.  Also if "public" candidates are not allowed for
     /// P2P_Transport_ICE_Enable, then this is ignored.
-    k_ESteamNetworkingConfig_P2P_STUN_ServerList = 103,
+    P2P_STUN_ServerList = 103,
 
     /// [connection int32] What types of ICE candidates to share with the peer.
     /// See k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_xxx values
-    k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable = 104,
+    P2P_Transport_ICE_Enable = 104,
 
     /// [connection int32] When selecting P2P transport, add various
     /// penalties to the scores for selected transports.  (Route selection
     /// scores are on a scale of milliseconds.  The score begins with the
     /// route ping time and is then adjusted.)
-    k_ESteamNetworkingConfig_P2P_Transport_ICE_Penalty = 105,
-    k_ESteamNetworkingConfig_P2P_Transport_SDR_Penalty = 106,
-    k_ESteamNetworkingConfig_P2P_TURN_ServerList = 107,
-    k_ESteamNetworkingConfig_P2P_TURN_UserList = 108,
-    k_ESteamNetworkingConfig_P2P_TURN_PassList = 109,
+    P2P_Transport_ICE_Penalty = 105,
+    P2P_Transport_SDR_Penalty = 106,
+    P2P_TURN_ServerList = 107,
+    P2P_TURN_UserList = 108,
+    P2P_TURN_PassList = 109,
     //k_ESteamNetworkingConfig_P2P_Transport_LANBeacon_Penalty = 107,
 
 //
@@ -1414,19 +1461,19 @@ enum ESteamNetworkingConfigValue {
     /// [int32 global] If the first N pings to a port all fail, mark that port as unavailable for
     /// a while, and try a different one.  Some ISPs and routers may drop the first
     /// packet, so setting this to 1 may greatly disrupt communications.
-    k_ESteamNetworkingConfig_SDRClient_ConsecutitivePingTimeoutsFailInitial = 19,
+    SDRClient_ConsecutitivePingTimeoutsFailInitial = 19,
 
     /// [int32 global] If N consecutive pings to a port fail, after having received successful
     /// communication, mark that port as unavailable for a while, and try a
     /// different one.
-    k_ESteamNetworkingConfig_SDRClient_ConsecutitivePingTimeoutsFail = 20,
+    SDRClient_ConsecutitivePingTimeoutsFail = 20,
 
     /// [int32 global] Minimum number of lifetime pings we need to send, before we think our estimate
     /// is solid.  The first ping to each cluster is very often delayed because of NAT,
     /// routers not having the best route, etc.  Until we've sent a sufficient number
     /// of pings, our estimate is often inaccurate.  Keep pinging until we get this
     /// many pings.
-    k_ESteamNetworkingConfig_SDRClient_MinPingsBeforePingAccurate = 21,
+    SDRClient_MinPingsBeforePingAccurate = 21,
 
     /// [int32 global] Set all steam datagram traffic to originate from the same
     /// local port. By default, we open up a new UDP socket (on a different local
@@ -1434,27 +1481,27 @@ enum ESteamNetworkingConfigValue {
     /// some routers that don't implement NAT properly.  If you have intermittent
     /// problems talking to relays that might be NAT related, try toggling
     /// this flag
-    k_ESteamNetworkingConfig_SDRClient_SingleSocket = 22,
+    SDRClient_SingleSocket = 22,
 
     /// [global string] Code of relay cluster to force use.  If not empty, we will
     /// only use relays in that cluster.  E.g. 'iad'
-    k_ESteamNetworkingConfig_SDRClient_ForceRelayCluster = 29,
+    SDRClient_ForceRelayCluster = 29,
 
     /// [connection string] For debugging, generate our own (unsigned) ticket, using
     /// the specified  gameserver address.  Router must be configured to accept unsigned
     /// tickets.
-    k_ESteamNetworkingConfig_SDRClient_DebugTicketAddress = 30,
+    SDRClient_DebugTicketAddress = 30,
 
     /// [global string] For debugging.  Override list of relays from the config with
     /// this set (maybe just one).  Comma-separated list.
-    k_ESteamNetworkingConfig_SDRClient_ForceProxyAddr = 31,
+    SDRClient_ForceProxyAddr = 31,
 
     /// [global string] For debugging.  Force ping times to clusters to be the specified
     /// values.  A comma separated list of <cluster>=<ms> values.  E.g. "sto=32,iad=100"
     ///
     /// This is a dev configuration value, you probably should not let users modify it
     /// in production.
-    k_ESteamNetworkingConfig_SDRClient_FakeClusterPing = 36,
+    SDRClient_FakeClusterPing = 36,
 
 //
 // Log levels for debugging information of various subsystems.
@@ -1464,18 +1511,18 @@ enum ESteamNetworkingConfigValue {
 //
 // The default for all values is k_ESteamNetworkingSocketsDebugOutputType_Warning.
 //
-    k_ESteamNetworkingConfig_LogLevel_AckRTT = 13, // [connection int32] RTT calculations for inline pings and replies
-    k_ESteamNetworkingConfig_LogLevel_PacketDecode = 14, // [connection int32] log SNP packets send/recv
-    k_ESteamNetworkingConfig_LogLevel_Message = 15, // [connection int32] log each message send/recv
-    k_ESteamNetworkingConfig_LogLevel_PacketGaps = 16, // [connection int32] dropped packets
-    k_ESteamNetworkingConfig_LogLevel_P2PRendezvous = 17, // [connection int32] P2P rendezvous messages
-    k_ESteamNetworkingConfig_LogLevel_SDRRelayPings = 18, // [global int32] Ping relays
+    LogLevel_AckRTT = 13, // [connection int32] RTT calculations for inline pings and replies
+    LogLevel_PacketDecode = 14, // [connection int32] log SNP packets send/recv
+    LogLevel_Message = 15, // [connection int32] log each message send/recv
+    LogLevel_PacketGaps = 16, // [connection int32] dropped packets
+    LogLevel_P2PRendezvous = 17, // [connection int32] P2P rendezvous messages
+    LogLevel_SDRRelayPings = 18, // [global int32] Ping relays
 
 
     // Deleted, do not use
-    k_ESteamNetworkingConfig_DELETED_EnumerateDevVars = 35,
+    DELETED_EnumerateDevVars = 35,
 
-    k_ESteamNetworkingConfigValue__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
@@ -1523,31 +1570,31 @@ struct SteamNetworkingConfigValue_t {
     //
     void SetInt32(ESteamNetworkingConfigValue eVal, int data) {
         m_eValue = eVal;
-        m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int32;
+        m_eDataType = ESteamNetworkingConfigDataType.Int32;
         m_val.m_int32 = data;
     }
 
     void SetInt64(ESteamNetworkingConfigValue eVal, long data) {
         m_eValue = eVal;
-        m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Int64;
+        m_eDataType = ESteamNetworkingConfigDataType.Int64;
         m_val.m_int64 = data;
     }
 
     void SetFloat(ESteamNetworkingConfigValue eVal, float data) {
         m_eValue = eVal;
-        m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Float;
+        m_eDataType = ESteamNetworkingConfigDataType.Float;
         m_val.m_float = data;
     }
 
     void SetPtr(ESteamNetworkingConfigValue eVal, void* data) {
         m_eValue = eVal;
-        m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Ptr;
+        m_eDataType = ESteamNetworkingConfigDataType.Ptr;
         m_val.m_ptr = data;
     }
 
     void SetString(ESteamNetworkingConfigValue eVal, const(char)* data) { // WARNING - Just saves your pointer.  Does NOT make a copy of the string
         m_eValue = eVal;
-        m_eDataType = ESteamNetworkingConfigDataType.k_ESteamNetworkingConfig_Ptr;
+        m_eDataType = ESteamNetworkingConfigDataType.Ptr;
         m_val.m_string = data;
     }
 
@@ -1556,13 +1603,13 @@ struct SteamNetworkingConfigValue_t {
 /// Return value of ISteamNetworkintgUtils::GetConfigValue
 enum ESteamNetworkingGetConfigValueResult {
 
-    k_ESteamNetworkingGetConfigValue_BadValue = -1, // No such configuration value
-    k_ESteamNetworkingGetConfigValue_BadScopeObj = -2,  // Bad connection handle, etc
-    k_ESteamNetworkingGetConfigValue_BufferTooSmall = -3, // Couldn't fit the result in your buffer
-    k_ESteamNetworkingGetConfigValue_OK = 1,
-    k_ESteamNetworkingGetConfigValue_OKInherited = 2, // A value was not set at this level, but the effective (inherited) value was returned.
+    BadValue = -1, // No such configuration value
+    BadScopeObj = -2,  // Bad connection handle, etc
+    BufferTooSmall = -3, // Couldn't fit the result in your buffer
+    OK = 1,
+    OKInherited = 2, // A value was not set at this level, but the effective (inherited) value was returned.
 
-    k_ESteamNetworkingGetConfigValueResult__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
@@ -1574,17 +1621,17 @@ enum ESteamNetworkingGetConfigValueResult {
 /// See ISteamNetworkingUtils::SetDebugOutputFunction
 enum ESteamNetworkingSocketsDebugOutputType {
 
-    k_ESteamNetworkingSocketsDebugOutputType_None = 0,
-    k_ESteamNetworkingSocketsDebugOutputType_Bug = 1, // You used the API incorrectly, or an internal error happened
-    k_ESteamNetworkingSocketsDebugOutputType_Error = 2, // Run-time error condition that isn't the result of a bug.  (E.g. we are offline, cannot bind a port, etc)
-    k_ESteamNetworkingSocketsDebugOutputType_Important = 3, // Nothing is wrong, but this is an important notification
-    k_ESteamNetworkingSocketsDebugOutputType_Warning = 4,
-    k_ESteamNetworkingSocketsDebugOutputType_Msg = 5, // Recommended amount
-    k_ESteamNetworkingSocketsDebugOutputType_Verbose = 6, // Quite a bit
-    k_ESteamNetworkingSocketsDebugOutputType_Debug = 7, // Practically everything
-    k_ESteamNetworkingSocketsDebugOutputType_Everything = 8, // Wall of text, detailed packet contents breakdown, etc
+    None = 0,
+    Bug = 1, // You used the API incorrectly, or an internal error happened
+    Error = 2, // Run-time error condition that isn't the result of a bug.  (E.g. we are offline, cannot bind a port, etc)
+    Important = 3, // Nothing is wrong, but this is an important notification
+    Warning = 4,
+    Msg = 5, // Recommended amount
+    Verbose = 6, // Quite a bit
+    Debug = 7, // Practically everything
+    Everything = 8, // Wall of text, detailed packet contents breakdown, etc
 
-    k_ESteamNetworkingSocketsDebugOutputType__Force32Bit = 0x7fffffff
+    _Force32Bit = 0x7fffffff
 
 }
 
@@ -1652,7 +1699,7 @@ private:
 }
 
 
-/+ I really hope I don't have to transcribe this
+/+ Implemented locally, not here
 
 ///////////////////////////////////////////////////////////////////////////////
 //

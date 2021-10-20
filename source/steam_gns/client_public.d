@@ -12,168 +12,168 @@ import steam_gns.universe;
 // General result codes
 enum EResult {
 
-    k_EResultNone = 0,                          // no result
-    k_EResultOK = 1,                            // success
-    k_EResultFail = 2,                          // generic failure
-    k_EResultNoConnection = 3,                  // no/failed network connection
-//  k_EResultNoConnectionRetry = 4,             // OBSOLETE - removed
-    k_EResultInvalidPassword = 5,               // password/ticket is invalid
-    k_EResultLoggedInElsewhere = 6,             // same user logged in elsewhere
-    k_EResultInvalidProtocolVer = 7,            // protocol version is incorrect
-    k_EResultInvalidParam = 8,                  // a parameter is incorrect
-    k_EResultFileNotFound = 9,                  // file was not found
-    k_EResultBusy = 10,                         // called method busy - action not taken
-    k_EResultInvalidState = 11,                 // called object was in an invalid state
-    k_EResultInvalidName = 12,                  // name is invalid
-    k_EResultInvalidEmail = 13,                 // email is invalid
-    k_EResultDuplicateName = 14,                // name is not unique
-    k_EResultAccessDenied = 15,                 // access is denied
-    k_EResultTimeout = 16,                      // operation timed out
-    k_EResultBanned = 17,                       // VAC2 banned
-    k_EResultAccountNotFound = 18,              // account not found
-    k_EResultInvalidSteamID = 19,               // steamID is invalid
-    k_EResultServiceUnavailable = 20,           // The requested service is currently unavailable
-    k_EResultNotLoggedOn = 21,                  // The user is not logged on
-    k_EResultPending = 22,                      // Request is pending (may be in process, or waiting on third party)
-    k_EResultEncryptionFailure = 23,            // Encryption or Decryption failed
-    k_EResultInsufficientPrivilege = 24,        // Insufficient privilege
-    k_EResultLimitExceeded = 25,                // Too much of a good thing
-    k_EResultRevoked = 26,                      // Access has been revoked (used for revoked guest passes)
-    k_EResultExpired = 27,                      // License/Guest pass the user is trying to access is expired
-    k_EResultAlreadyRedeemed = 28,              // Guest pass has already been redeemed by account, cannot be acked again
-    k_EResultDuplicateRequest = 29,             // The request is a duplicate and the action has already occurred in the past, ignored this time
-    k_EResultAlreadyOwned = 30,                 // All the games in this guest pass redemption request are already owned by the user
-    k_EResultIPNotFound = 31,                   // IP address not found
-    k_EResultPersistFailed = 32,                // failed to write change to the data store
-    k_EResultLockingFailed = 33,                // failed to acquire access lock for this operation
-    k_EResultLogonSessionReplaced = 34,
-    k_EResultConnectFailed = 35,
-    k_EResultHandshakeFailed = 36,
-    k_EResultIOFailure = 37,
-    k_EResultRemoteDisconnect = 38,
-    k_EResultShoppingCartNotFound = 39,         // failed to find the shopping cart requested
-    k_EResultBlocked = 40,                      // a user didn't allow it
-    k_EResultIgnored = 41,                      // target is ignoring sender
-    k_EResultNoMatch = 42,                      // nothing matching the request found
-    k_EResultAccountDisabled = 43,
-    k_EResultServiceReadOnly = 44,              // this service is not accepting content changes right now
-    k_EResultAccountNotFeatured = 45,           // account doesn't have value, so this feature isn't available
-    k_EResultAdministratorOK = 46,              // allowed to take this action, but only because requester is admin
-    k_EResultContentVersion = 47,               // A Version mismatch in content transmitted within the Steam protocol.
-    k_EResultTryAnotherCM = 48,                 // The current CM can't service the user making a request, user should try another.
-    k_EResultPasswordRequiredToKickSession = 49,// You are already logged in elsewhere, this cached credential login has failed.
-    k_EResultAlreadyLoggedInElsewhere = 50,     // You are already logged in elsewhere, you must wait
-    k_EResultSuspended = 51,                    // Long running operation (content download) suspended/paused
-    k_EResultCancelled = 52,                    // Operation canceled (typically by user: content download)
-    k_EResultDataCorruption = 53,               // Operation canceled because data is ill formed or unrecoverable
-    k_EResultDiskFull = 54,                     // Operation canceled - not enough disk space.
-    k_EResultRemoteCallFailed = 55,             // an remote call or IPC call failed
-    k_EResultPasswordUnset = 56,                // Password could not be verified as it's unset server side
-    k_EResultExternalAccountUnlinked = 57,      // External account (PSN, Facebook...) is not linked to a Steam account
-    k_EResultPSNTicketInvalid = 58,             // PSN ticket was invalid
-    k_EResultExternalAccountAlreadyLinked = 59, // External account (PSN, Facebook...) is already linked to some other account, must explicitly request to replace/delete the link first
-    k_EResultRemoteFileConflict = 60,           // The sync cannot resume due to a conflict between the local and remote files
-    k_EResultIllegalPassword = 61,              // The requested new password is not legal
-    k_EResultSameAsPreviousValue = 62,          // new value is the same as the old one ( secret question and answer )
-    k_EResultAccountLogonDenied = 63,           // account login denied due to 2nd factor authentication failure
-    k_EResultCannotUseOldPassword = 64,         // The requested new password is not legal
-    k_EResultInvalidLoginAuthCode = 65,         // account login denied due to auth code invalid
-    k_EResultAccountLogonDeniedNoMail = 66,     // account login denied due to 2nd factor auth failure - and no mail has been sent
-    k_EResultHardwareNotCapableOfIPT = 67,      //
-    k_EResultIPTInitError = 68,                 //
-    k_EResultParentalControlRestricted = 69,    // operation failed due to parental control restrictions for current user
-    k_EResultFacebookQueryError = 70,           // Facebook query returned an error
-    k_EResultExpiredLoginAuthCode = 71,         // account login denied due to auth code expired
-    k_EResultIPLoginRestrictionFailed = 72,
-    k_EResultAccountLockedDown = 73,
-    k_EResultAccountLogonDeniedVerifiedEmailRequired = 74,
-    k_EResultNoMatchingURL = 75,
-    k_EResultBadResponse = 76,                  // parse failure, missing field, etc.
-    k_EResultRequirePasswordReEntry = 77,       // The user cannot complete the action until they re-enter their password
-    k_EResultValueOutOfRange = 78,              // the value entered is outside the acceptable range
-    k_EResultUnexpectedError = 79,              // something happened that we didn't expect to ever happen
-    k_EResultDisabled = 80,                     // The requested service has been configured to be unavailable
-    k_EResultInvalidCEGSubmission = 81,         // The set of files submitted to the CEG server are not valid !
-    k_EResultRestrictedDevice = 82,             // The device being used is not allowed to perform this action
-    k_EResultRegionLocked = 83,                 // The action could not be complete because it is region restricted
-    k_EResultRateLimitExceeded = 84,            // Temporary rate limit exceeded, try again later, different from k_EResultLimitExceeded which may be permanent
-    k_EResultAccountLoginDeniedNeedTwoFactor = 85,  // Need two-factor code to login
-    k_EResultItemDeleted = 86,                  // The thing we're trying to access has been deleted
-    k_EResultAccountLoginDeniedThrottle = 87,   // login attempt failed, try to throttle response to possible attacker
-    k_EResultTwoFactorCodeMismatch = 88,        // two factor code mismatch
-    k_EResultTwoFactorActivationCodeMismatch = 89,  // activation code for two-factor didn't match
-    k_EResultAccountAssociatedToMultiplePartners = 90,  // account has been associated with multiple partners
-    k_EResultNotModified = 91,                  // data not modified
-    k_EResultNoMobileDevice = 92,               // the account does not have a mobile device associated with it
-    k_EResultTimeNotSynced = 93,                // the time presented is out of range or tolerance
-    k_EResultSmsCodeFailed = 94,                // SMS code failure (no match, none pending, etc.)
-    k_EResultAccountLimitExceeded = 95,         // Too many accounts access this resource
-    k_EResultAccountActivityLimitExceeded = 96, // Too many changes to this account
-    k_EResultPhoneActivityLimitExceeded = 97,   // Too many changes to this phone
-    k_EResultRefundToWallet = 98,               // Cannot refund to payment method, must use wallet
-    k_EResultEmailSendFailure = 99,             // Cannot send an email
-    k_EResultNotSettled = 100,                  // Can't perform operation till payment has settled
-    k_EResultNeedCaptcha = 101,                 // Needs to provide a valid captcha
-    k_EResultGSLTDenied = 102,                  // a game server login token owned by this token's owner has been banned
-    k_EResultGSOwnerDenied = 103,               // game server owner is denied for other reason (account lock, community ban, vac ban, missing phone)
-    k_EResultInvalidItemType = 104,             // the type of thing we were requested to act on is invalid
-    k_EResultIPBanned = 105,                    // the ip address has been banned from taking this action
-    k_EResultGSLTExpired = 106,                 // this token has expired from disuse; can be reset for use
-    k_EResultInsufficientFunds = 107,           // user doesn't have enough wallet funds to complete the action
-    k_EResultTooManyPending = 108,              // There are too many of this thing pending already
-    k_EResultNoSiteLicensesFound = 109,         // No site licenses found
-    k_EResultWGNetworkSendExceeded = 110,       // the WG couldn't send a response because we exceeded max network send size
-    k_EResultAccountNotFriends = 111,           // the user is not mutually friends
-    k_EResultLimitedUserAccount = 112,          // the user is limited
-    k_EResultCantRemoveItem = 113,              // item can't be removed
-    k_EResultAccountDeleted = 114,              // account has been deleted
-    k_EResultExistingUserCancelledLicense = 115,    // A license for this already exists, but cancelled
-    k_EResultCommunityCooldown = 116,           // access is denied because of a community cooldown (probably from support profile data resets)
-    k_EResultNoLauncherSpecified = 117,         // No launcher was specified, but a launcher was needed to choose correct realm for operation.
-    k_EResultMustAgreeToSSA = 118,              // User must agree to china SSA or global SSA before login
-    k_EResultLauncherMigrated = 119,            // The specified launcher type is no longer supported; the user should be directed elsewhere
-    k_EResultSteamRealmMismatch = 120,          // The user's realm does not match the realm of the requested resource
-    k_EResultInvalidSignature = 121,            // signature check did not match
-    k_EResultParseFailure = 122,                // Failed to parse input
-    k_EResultNoVerifiedPhone = 123,             // account does not have a verified phone number
+    None = 0,                          // no result
+    OK = 1,                            // success
+    Fail = 2,                          // generic failure
+    NoConnection = 3,                  // no/failed network connection
+//  NoConnectionRetry = 4,             // OBSOLETE - removed
+    InvalidPassword = 5,               // password/ticket is invalid
+    LoggedInElsewhere = 6,             // same user logged in elsewhere
+    InvalidProtocolVer = 7,            // protocol version is incorrect
+    InvalidParam = 8,                  // a parameter is incorrect
+    FileNotFound = 9,                  // file was not found
+    Busy = 10,                         // called method busy - action not taken
+    InvalidState = 11,                 // called object was in an invalid state
+    InvalidName = 12,                  // name is invalid
+    InvalidEmail = 13,                 // email is invalid
+    DuplicateName = 14,                // name is not unique
+    AccessDenied = 15,                 // access is denied
+    Timeout = 16,                      // operation timed out
+    Banned = 17,                       // VAC2 banned
+    AccountNotFound = 18,              // account not found
+    InvalidSteamID = 19,               // steamID is invalid
+    ServiceUnavailable = 20,           // The requested service is currently unavailable
+    NotLoggedOn = 21,                  // The user is not logged on
+    Pending = 22,                      // Request is pending (may be in process, or waiting on third party)
+    EncryptionFailure = 23,            // Encryption or Decryption failed
+    InsufficientPrivilege = 24,        // Insufficient privilege
+    LimitExceeded = 25,                // Too much of a good thing
+    Revoked = 26,                      // Access has been revoked (used for revoked guest passes)
+    Expired = 27,                      // License/Guest pass the user is trying to access is expired
+    AlreadyRedeemed = 28,              // Guest pass has already been redeemed by account, cannot be acked again
+    DuplicateRequest = 29,             // The request is a duplicate and the action has already occurred in the past, ignored this time
+    AlreadyOwned = 30,                 // All the games in this guest pass redemption request are already owned by the user
+    IPNotFound = 31,                   // IP address not found
+    PersistFailed = 32,                // failed to write change to the data store
+    LockingFailed = 33,                // failed to acquire access lock for this operation
+    LogonSessionReplaced = 34,
+    ConnectFailed = 35,
+    HandshakeFailed = 36,
+    IOFailure = 37,
+    RemoteDisconnect = 38,
+    ShoppingCartNotFound = 39,         // failed to find the shopping cart requested
+    Blocked = 40,                      // a user didn't allow it
+    Ignored = 41,                      // target is ignoring sender
+    NoMatch = 42,                      // nothing matching the request found
+    AccountDisabled = 43,
+    ServiceReadOnly = 44,              // this service is not accepting content changes right now
+    AccountNotFeatured = 45,           // account doesn't have value, so this feature isn't available
+    AdministratorOK = 46,              // allowed to take this action, but only because requester is admin
+    ContentVersion = 47,               // A Version mismatch in content transmitted within the Steam protocol.
+    TryAnotherCM = 48,                 // The current CM can't service the user making a request, user should try another.
+    PasswordRequiredToKickSession = 49,// You are already logged in elsewhere, this cached credential login has failed.
+    AlreadyLoggedInElsewhere = 50,     // You are already logged in elsewhere, you must wait
+    Suspended = 51,                    // Long running operation (content download) suspended/paused
+    Cancelled = 52,                    // Operation canceled (typically by user: content download)
+    DataCorruption = 53,               // Operation canceled because data is ill formed or unrecoverable
+    DiskFull = 54,                     // Operation canceled - not enough disk space.
+    RemoteCallFailed = 55,             // an remote call or IPC call failed
+    PasswordUnset = 56,                // Password could not be verified as it's unset server side
+    ExternalAccountUnlinked = 57,      // External account (PSN, Facebook...) is not linked to a Steam account
+    PSNTicketInvalid = 58,             // PSN ticket was invalid
+    ExternalAccountAlreadyLinked = 59, // External account (PSN, Facebook...) is already linked to some other account, must explicitly request to replace/delete the link first
+    RemoteFileConflict = 60,           // The sync cannot resume due to a conflict between the local and remote files
+    IllegalPassword = 61,              // The requested new password is not legal
+    SameAsPreviousValue = 62,          // new value is the same as the old one ( secret question and answer )
+    AccountLogonDenied = 63,           // account login denied due to 2nd factor authentication failure
+    CannotUseOldPassword = 64,         // The requested new password is not legal
+    InvalidLoginAuthCode = 65,         // account login denied due to auth code invalid
+    AccountLogonDeniedNoMail = 66,     // account login denied due to 2nd factor auth failure - and no mail has been sent
+    HardwareNotCapableOfIPT = 67,      //
+    IPTInitError = 68,                 //
+    ParentalControlRestricted = 69,    // operation failed due to parental control restrictions for current user
+    FacebookQueryError = 70,           // Facebook query returned an error
+    ExpiredLoginAuthCode = 71,         // account login denied due to auth code expired
+    IPLoginRestrictionFailed = 72,
+    AccountLockedDown = 73,
+    AccountLogonDeniedVerifiedEmailRequired = 74,
+    NoMatchingURL = 75,
+    BadResponse = 76,                  // parse failure, missing field, etc.
+    RequirePasswordReEntry = 77,       // The user cannot complete the action until they re-enter their password
+    ValueOutOfRange = 78,              // the value entered is outside the acceptable range
+    UnexpectedError = 79,              // something happened that we didn't expect to ever happen
+    Disabled = 80,                     // The requested service has been configured to be unavailable
+    InvalidCEGSubmission = 81,         // The set of files submitted to the CEG server are not valid !
+    RestrictedDevice = 82,             // The device being used is not allowed to perform this action
+    RegionLocked = 83,                 // The action could not be complete because it is region restricted
+    RateLimitExceeded = 84,            // Temporary rate limit exceeded, try again later, different from k_EResultLimitExceeded which may be permanent
+    AccountLoginDeniedNeedTwoFactor = 85,  // Need two-factor code to login
+    ItemDeleted = 86,                  // The thing we're trying to access has been deleted
+    AccountLoginDeniedThrottle = 87,   // login attempt failed, try to throttle response to possible attacker
+    TwoFactorCodeMismatch = 88,        // two factor code mismatch
+    TwoFactorActivationCodeMismatch = 89,  // activation code for two-factor didn't match
+    AccountAssociatedToMultiplePartners = 90,  // account has been associated with multiple partners
+    NotModified = 91,                  // data not modified
+    NoMobileDevice = 92,               // the account does not have a mobile device associated with it
+    TimeNotSynced = 93,                // the time presented is out of range or tolerance
+    SmsCodeFailed = 94,                // SMS code failure (no match, none pending, etc.)
+    AccountLimitExceeded = 95,         // Too many accounts access this resource
+    AccountActivityLimitExceeded = 96, // Too many changes to this account
+    PhoneActivityLimitExceeded = 97,   // Too many changes to this phone
+    RefundToWallet = 98,               // Cannot refund to payment method, must use wallet
+    EmailSendFailure = 99,             // Cannot send an email
+    NotSettled = 100,                  // Can't perform operation till payment has settled
+    NeedCaptcha = 101,                 // Needs to provide a valid captcha
+    GSLTDenied = 102,                  // a game server login token owned by this token's owner has been banned
+    GSOwnerDenied = 103,               // game server owner is denied for other reason (account lock, community ban, vac ban, missing phone)
+    InvalidItemType = 104,             // the type of thing we were requested to act on is invalid
+    IPBanned = 105,                    // the ip address has been banned from taking this action
+    GSLTExpired = 106,                 // this token has expired from disuse; can be reset for use
+    InsufficientFunds = 107,           // user doesn't have enough wallet funds to complete the action
+    TooManyPending = 108,              // There are too many of this thing pending already
+    NoSiteLicensesFound = 109,         // No site licenses found
+    WGNetworkSendExceeded = 110,       // the WG couldn't send a response because we exceeded max network send size
+    AccountNotFriends = 111,           // the user is not mutually friends
+    LimitedUserAccount = 112,          // the user is limited
+    CantRemoveItem = 113,              // item can't be removed
+    AccountDeleted = 114,              // account has been deleted
+    ExistingUserCancelledLicense = 115,    // A license for this already exists, but cancelled
+    CommunityCooldown = 116,           // access is denied because of a community cooldown (probably from support profile data resets)
+    NoLauncherSpecified = 117,         // No launcher was specified, but a launcher was needed to choose correct realm for operation.
+    MustAgreeToSSA = 118,              // User must agree to china SSA or global SSA before login
+    LauncherMigrated = 119,            // The specified launcher type is no longer supported; the user should be directed elsewhere
+    SteamRealmMismatch = 120,          // The user's realm does not match the realm of the requested resource
+    InvalidSignature = 121,            // signature check did not match
+    ParseFailure = 122,                // Failed to parse input
+    NoVerifiedPhone = 123,             // account does not have a verified phone number
 
 }
 
 // Error codes for use with the voice functions
 enum EVoiceResult {
 
-    k_EVoiceResultOK = 0,
-    k_EVoiceResultNotInitialized = 1,
-    k_EVoiceResultNotRecording = 2,
-    k_EVoiceResultNoData = 3,
-    k_EVoiceResultBufferTooSmall = 4,
-    k_EVoiceResultDataCorrupted = 5,
-    k_EVoiceResultRestricted = 6,
-    k_EVoiceResultUnsupportedCodec = 7,
-    k_EVoiceResultReceiverOutOfDate = 8,
-    k_EVoiceResultReceiverDidNotAnswer = 9,
+    OK = 0,
+    NotInitialized = 1,
+    NotRecording = 2,
+    NoData = 3,
+    BufferTooSmall = 4,
+    DataCorrupted = 5,
+    Restricted = 6,
+    UnsupportedCodec = 7,
+    ReceiverOutOfDate = 8,
+    ReceiverDidNotAnswer = 9,
 
 }
 
 // Result codes to GSHandleClientDeny/Kick
 enum EDenyReason {
 
-    k_EDenyInvalid = 0,
-    k_EDenyInvalidVersion = 1,
-    k_EDenyGeneric = 2,
-    k_EDenyNotLoggedOn = 3,
-    k_EDenyNoLicense = 4,
-    k_EDenyCheater = 5,
-    k_EDenyLoggedInElseWhere = 6,
-    k_EDenyUnknownText = 7,
-    k_EDenyIncompatibleAnticheat = 8,
-    k_EDenyMemoryCorruption = 9,
-    k_EDenyIncompatibleSoftware = 10,
-    k_EDenySteamConnectionLost = 11,
-    k_EDenySteamConnectionError = 12,
-    k_EDenySteamResponseTimedOut = 13,
-    k_EDenySteamValidationStalled = 14,
-    k_EDenySteamOwnerLeftGuestUser = 15,
+    Invalid = 0,
+    InvalidVersion = 1,
+    Generic = 2,
+    NotLoggedOn = 3,
+    NoLicense = 4,
+    Cheater = 5,
+    LoggedInElseWhere = 6,
+    UnknownText = 7,
+    IncompatibleAnticheat = 8,
+    MemoryCorruption = 9,
+    IncompatibleSoftware = 10,
+    SteamConnectionLost = 11,
+    SteamConnectionError = 12,
+    SteamResponseTimedOut = 13,
+    SteamValidationStalled = 14,
+    SteamOwnerLeftGuestUser = 15,
 
 }
 
@@ -184,37 +184,37 @@ enum HAuthTicket k_HAuthTicketInvalid = 0;
 // results from BeginAuthSession
 enum EBeginAuthSessionResult {
 
-    k_EBeginAuthSessionResultOK = 0,                        // Ticket is valid for this game and this steamID.
-    k_EBeginAuthSessionResultInvalidTicket = 1,             // Ticket is not valid.
-    k_EBeginAuthSessionResultDuplicateRequest = 2,          // A ticket has already been submitted for this steamID
-    k_EBeginAuthSessionResultInvalidVersion = 3,            // Ticket is from an incompatible interface version
-    k_EBeginAuthSessionResultGameMismatch = 4,              // Ticket is not for this game
-    k_EBeginAuthSessionResultExpiredTicket = 5,             // Ticket has expired
+    OK = 0,                        // Ticket is valid for this game and this steamID.
+    InvalidTicket = 1,             // Ticket is not valid.
+    DuplicateRequest = 2,          // A ticket has already been submitted for this steamID
+    InvalidVersion = 3,            // Ticket is from an incompatible interface version
+    GameMismatch = 4,              // Ticket is not for this game
+    ExpiredTicket = 5,             // Ticket has expired
 
 }
 
 // Callback values for callback ValidateAuthTicketResponse_t which is a response to BeginAuthSession
 enum EAuthSessionResponse {
 
-    k_EAuthSessionResponseOK = 0,                           // Steam has verified the user is online, the ticket is valid and ticket has not been reused.
-    k_EAuthSessionResponseUserNotConnectedToSteam = 1,      // The user in question is not connected to steam
-    k_EAuthSessionResponseNoLicenseOrExpired = 2,           // The license has expired.
-    k_EAuthSessionResponseVACBanned = 3,                    // The user is VAC banned for this game.
-    k_EAuthSessionResponseLoggedInElseWhere = 4,            // The user account has logged in elsewhere and the session containing the game instance has been disconnected.
-    k_EAuthSessionResponseVACCheckTimedOut = 5,             // VAC has been unable to perform anti-cheat checks on this user
-    k_EAuthSessionResponseAuthTicketCanceled = 6,           // The ticket has been canceled by the issuer
-    k_EAuthSessionResponseAuthTicketInvalidAlreadyUsed = 7, // This ticket has already been used, it is not valid.
-    k_EAuthSessionResponseAuthTicketInvalid = 8,            // This ticket is not from a user instance currently connected to steam.
-    k_EAuthSessionResponsePublisherIssuedBan = 9,           // The user is banned for this game. The ban came via the web api and not VAC
+    OK = 0,                           // Steam has verified the user is online, the ticket is valid and ticket has not been reused.
+    UserNotConnectedToSteam = 1,      // The user in question is not connected to steam
+    NoLicenseOrExpired = 2,           // The license has expired.
+    VACBanned = 3,                    // The user is VAC banned for this game.
+    LoggedInElseWhere = 4,            // The user account has logged in elsewhere and the session containing the game instance has been disconnected.
+    VACCheckTimedOut = 5,             // VAC has been unable to perform anti-cheat checks on this user
+    AuthTicketCanceled = 6,           // The ticket has been canceled by the issuer
+    AuthTicketInvalidAlreadyUsed = 7, // This ticket has already been used, it is not valid.
+    AuthTicketInvalid = 8,            // This ticket is not from a user instance currently connected to steam.
+    PublisherIssuedBan = 9,           // The user is banned for this game. The ban came via the web api and not VAC
 
 }
 
 // results from UserHasLicenseForApp
 enum EUserHasLicenseForAppResult {
 
-    k_EUserHasLicenseResultHasLicense = 0,                  // User has a license for specified app
-    k_EUserHasLicenseResultDoesNotHaveLicense = 1,          // User does not have a license for the specified app
-    k_EUserHasLicenseResultNoAuth = 2,                      // User has not been authenticated
+    HasLicense = 0,                  // User has a license for specified app
+    DoesNotHaveLicense = 1,          // User does not have a license for the specified app
+    NoAuth = 2,                      // User has not been authenticated
 
 }
 
@@ -222,20 +222,20 @@ enum EUserHasLicenseForAppResult {
 // Steam account types
 enum EAccountType {
 
-    k_EAccountTypeInvalid = 0,
-    k_EAccountTypeIndividual = 1,       // single user account
-    k_EAccountTypeMultiseat = 2,        // multiseat (e.g. cybercafe) account
-    k_EAccountTypeGameServer = 3,       // game server account
-    k_EAccountTypeAnonGameServer = 4,   // anonymous game server account
-    k_EAccountTypePending = 5,          // pending
-    k_EAccountTypeContentServer = 6,    // content server
-    k_EAccountTypeClan = 7,
-    k_EAccountTypeChat = 8,
-    k_EAccountTypeConsoleUser = 9,      // Fake SteamID for local PSN account on PS3 or Live account on 360, etc.
-    k_EAccountTypeAnonUser = 10,
+    Invalid = 0,
+    Individual = 1,       // single user account
+    Multiseat = 2,        // multiseat (e.g. cybercafe) account
+    GameServer = 3,       // game server account
+    AnonGameServer = 4,   // anonymous game server account
+    Pending = 5,          // pending
+    ContentServer = 6,    // content server
+    Clan = 7,
+    Chat = 8,
+    ConsoleUser = 9,      // Fake SteamID for local PSN account on PS3 or Live account on 360, etc.
+    AnonUser = 10,
 
     // Max of 16 items in this field
-    k_EAccountTypeMax
+    TypeMax
 
 }
 
@@ -246,22 +246,22 @@ enum EAccountType {
 //-----------------------------------------------------------------------------
 enum EChatEntryType {
 
-    k_EChatEntryTypeInvalid = 0,
-    k_EChatEntryTypeChatMsg = 1,        // Normal text message from another user
-    k_EChatEntryTypeTyping = 2,         // Another user is typing (not used in multi-user chat)
-    k_EChatEntryTypeInviteGame = 3,     // Invite from other user into that users current game
-    k_EChatEntryTypeEmote = 4,          // text emote message (deprecated, should be treated as ChatMsg)
+    Invalid = 0,
+    ChatMsg = 1,        // Normal text message from another user
+    Typing = 2,         // Another user is typing (not used in multi-user chat)
+    InviteGame = 3,     // Invite from other user into that users current game
+    Emote = 4,          // text emote message (deprecated, should be treated as ChatMsg)
     //k_EChatEntryTypeLobbyGameStart = 5,   // lobby game is starting (dead - listen for LobbyGameCreated_t callback instead)
-    k_EChatEntryTypeLeftConversation = 6, // user has left the conversation ( closed chat window )
+    LeftConversation = 6, // user has left the conversation ( closed chat window )
     // Above are previous FriendMsgType entries, now merged into more generic chat entry types
-    k_EChatEntryTypeEntered = 7,        // user has entered the conversation (used in multi-user chat and group chat)
-    k_EChatEntryTypeWasKicked = 8,      // user was kicked (data: 64-bit steamid of actor performing the kick)
-    k_EChatEntryTypeWasBanned = 9,      // user was banned (data: 64-bit steamid of actor performing the ban)
-    k_EChatEntryTypeDisconnected = 10,  // user disconnected
-    k_EChatEntryTypeHistoricalChat = 11,    // a chat message from user's chat history or offilne message
+    Entered = 7,        // user has entered the conversation (used in multi-user chat and group chat)
+    WasKicked = 8,      // user was kicked (data: 64-bit steamid of actor performing the kick)
+    WasBanned = 9,      // user was banned (data: 64-bit steamid of actor performing the ban)
+    Disconnected = 10,  // user disconnected
+    HistoricalChat = 11,    // a chat message from user's chat history or offilne message
     //k_EChatEntryTypeReserved1 = 12, // No longer used
     //k_EChatEntryTypeReserved2 = 13, // No longer used
-    k_EChatEntryTypeLinkBlocked = 14, // a link was removed by the chat filter.
+    LinkBlocked = 14, // a link was removed by the chat filter.
 
 }
 
@@ -271,21 +271,21 @@ enum EChatEntryType {
 //-----------------------------------------------------------------------------
 enum EChatRoomEnterResponse {
 
-    k_EChatRoomEnterResponseSuccess = 1,        // Success
-    k_EChatRoomEnterResponseDoesntExist = 2,    // Chat doesn't exist (probably closed)
-    k_EChatRoomEnterResponseNotAllowed = 3,     // General Denied - You don't have the permissions needed to join the chat
-    k_EChatRoomEnterResponseFull = 4,           // Chat room has reached its maximum size
-    k_EChatRoomEnterResponseError = 5,          // Unexpected Error
-    k_EChatRoomEnterResponseBanned = 6,         // You are banned from this chat room and may not join
-    k_EChatRoomEnterResponseLimited = 7,        // Joining this chat is not allowed because you are a limited user (no value on account)
-    k_EChatRoomEnterResponseClanDisabled = 8,   // Attempt to join a clan chat when the clan is locked or disabled
-    k_EChatRoomEnterResponseCommunityBan = 9,   // Attempt to join a chat when the user has a community lock on their account
-    k_EChatRoomEnterResponseMemberBlockedYou = 10, // Join failed - some member in the chat has blocked you from joining
-    k_EChatRoomEnterResponseYouBlockedMember = 11, // Join failed - you have blocked some member already in the chat
+    Success = 1,        // Success
+    DoesntExist = 2,    // Chat doesn't exist (probably closed)
+    NotAllowed = 3,     // General Denied - You don't have the permissions needed to join the chat
+    Full = 4,           // Chat room has reached its maximum size
+    Error = 5,          // Unexpected Error
+    Banned = 6,         // You are banned from this chat room and may not join
+    Limited = 7,        // Joining this chat is not allowed because you are a limited user (no value on account)
+    ClanDisabled = 8,   // Attempt to join a clan chat when the clan is locked or disabled
+    CommunityBan = 9,   // Attempt to join a chat when the user has a community lock on their account
+    MemberBlockedYou = 10, // Join failed - some member in the chat has blocked you from joining
+    YouBlockedMember = 11, // Join failed - you have blocked some member already in the chat
     // k_EChatRoomEnterResponseNoRankingDataLobby = 12,  // No longer used
     // k_EChatRoomEnterResponseNoRankingDataUser = 13,  //  No longer used
     // k_EChatRoomEnterResponseRankOutOfRange = 14, //  No longer used
-    k_EChatRoomEnterResponseRatelimitExceeded = 15, // Join failed - to many join attempts in a very short period of time
+    RatelimitExceeded = 15, // Join failed - to many join attempts in a very short period of time
 
 }
 
@@ -298,11 +298,11 @@ enum uint k_unSteamUserDefaultInstance = 1; // fixed instance for all individual
 // of the steam ID's "instance", leaving 12 for the actual instances
 enum EChatSteamIDInstanceFlags {
 
-    k_EChatAccountInstanceMask = 0x00000FFF, // top 8 bits are flags
+    EChatAccountInstanceMask = 0x00000FFF, // top 8 bits are flags
 
-    k_EChatInstanceFlagClan = ( k_unSteamAccountInstanceMask + 1 ) >> 1,    // top bit
-    k_EChatInstanceFlagLobby = ( k_unSteamAccountInstanceMask + 1 ) >> 2,   // next one down, etc
-    k_EChatInstanceFlagMMSLobby = ( k_unSteamAccountInstanceMask + 1 ) >> 3,    // next one down, etc
+    EChatInstanceFlagClan = ( k_unSteamAccountInstanceMask + 1 ) >> 1,    // top bit
+    EChatInstanceFlagLobby = ( k_unSteamAccountInstanceMask + 1 ) >> 2,   // next one down, etc
+    EChatInstanceFlagMMSLobby = ( k_unSteamAccountInstanceMask + 1 ) >> 3,    // next one down, etc
 
     // Max of 8 flags
 }
@@ -313,10 +313,10 @@ enum EChatSteamIDInstanceFlags {
 //-----------------------------------------------------------------------------
 enum ENotificationPosition {
 
-    k_EPositionTopLeft = 0,
-    k_EPositionTopRight = 1,
-    k_EPositionBottomLeft = 2,
-    k_EPositionBottomRight = 3,
+    TopLeft = 0,
+    TopRight = 1,
+    BottomLeft = 2,
+    BottomRight = 3,
 
 }
 
@@ -326,30 +326,30 @@ enum ENotificationPosition {
 //-----------------------------------------------------------------------------
 enum EBroadcastUploadResult {
 
-    k_EBroadcastUploadResultNone = 0,   // broadcast state unknown
-    k_EBroadcastUploadResultOK = 1,     // broadcast was good, no problems
-    k_EBroadcastUploadResultInitFailed = 2, // broadcast init failed
-    k_EBroadcastUploadResultFrameFailed = 3,    // broadcast frame upload failed
-    k_EBroadcastUploadResultTimeout = 4,    // broadcast upload timed out
-    k_EBroadcastUploadResultBandwidthExceeded = 5,  // broadcast send too much data
-    k_EBroadcastUploadResultLowFPS = 6, // broadcast FPS too low
-    k_EBroadcastUploadResultMissingKeyFrames = 7,   // broadcast sending not enough key frames
-    k_EBroadcastUploadResultNoConnection = 8,   // broadcast client failed to connect to relay
-    k_EBroadcastUploadResultRelayFailed = 9,    // relay dropped the upload
-    k_EBroadcastUploadResultSettingsChanged = 10,   // the client changed broadcast settings
-    k_EBroadcastUploadResultMissingAudio = 11,  // client failed to send audio data
-    k_EBroadcastUploadResultTooFarBehind = 12,  // clients was too slow uploading
-    k_EBroadcastUploadResultTranscodeBehind = 13,   // server failed to keep up with transcode
-    k_EBroadcastUploadResultNotAllowedToPlay = 14, // Broadcast does not have permissions to play game
-    k_EBroadcastUploadResultBusy = 15, // RTMP host to busy to take new broadcast stream, choose another
-    k_EBroadcastUploadResultBanned = 16, // Account banned from community broadcast
-    k_EBroadcastUploadResultAlreadyActive = 17, // We already already have an stream running.
-    k_EBroadcastUploadResultForcedOff = 18, // We explicitly shutting down a broadcast
-    k_EBroadcastUploadResultAudioBehind = 19, // Audio stream was too far behind video
-    k_EBroadcastUploadResultShutdown = 20,  // Broadcast Server was shut down
-    k_EBroadcastUploadResultDisconnect = 21,    // broadcast uploader TCP disconnected
-    k_EBroadcastUploadResultVideoInitFailed = 22,   // invalid video settings
-    k_EBroadcastUploadResultAudioInitFailed = 23,   // invalid audio settings
+    None = 0,   // broadcast state unknown
+    OK = 1,     // broadcast was good, no problems
+    InitFailed = 2, // broadcast init failed
+    FrameFailed = 3,    // broadcast frame upload failed
+    Timeout = 4,    // broadcast upload timed out
+    BandwidthExceeded = 5,  // broadcast send too much data
+    LowFPS = 6, // broadcast FPS too low
+    MissingKeyFrames = 7,   // broadcast sending not enough key frames
+    NoConnection = 8,   // broadcast client failed to connect to relay
+    RelayFailed = 9,    // relay dropped the upload
+    SettingsChanged = 10,   // the client changed broadcast settings
+    MissingAudio = 11,  // client failed to send audio data
+    TooFarBehind = 12,  // clients was too slow uploading
+    TranscodeBehind = 13,   // server failed to keep up with transcode
+    NotAllowedToPlay = 14, // Broadcast does not have permissions to play game
+    Busy = 15, // RTMP host to busy to take new broadcast stream, choose another
+    Banned = 16, // Account banned from community broadcast
+    AlreadyActive = 17, // We already already have an stream running.
+    ForcedOff = 18, // We explicitly shutting down a broadcast
+    AudioBehind = 19, // Audio stream was too far behind video
+    Shutdown = 20,  // Broadcast Server was shut down
+    Disconnect = 21,    // broadcast uploader TCP disconnected
+    VideoInitFailed = 22,   // invalid video settings
+    AudioInitFailed = 23,   // invalid audio settings
 
 }
 
@@ -360,57 +360,57 @@ enum EBroadcastUploadResult {
 //-----------------------------------------------------------------------------
 enum EMarketNotAllowedReasonFlags {
 
-    k_EMarketNotAllowedReason_None = 0,
+    None = 0,
 
     // A back-end call failed or something that might work again on retry
-    k_EMarketNotAllowedReason_TemporaryFailure = (1 << 0),
+    TemporaryFailure = (1 << 0),
 
     // Disabled account
-    k_EMarketNotAllowedReason_AccountDisabled = (1 << 1),
+    AccountDisabled = (1 << 1),
 
     // Locked account
-    k_EMarketNotAllowedReason_AccountLockedDown = (1 << 2),
+    AccountLockedDown = (1 << 2),
 
     // Limited account (no purchases)
-    k_EMarketNotAllowedReason_AccountLimited = (1 << 3),
+    AccountLimited = (1 << 3),
 
     // The account is banned from trading items
-    k_EMarketNotAllowedReason_TradeBanned = (1 << 4),
+    TradeBanned = (1 << 4),
 
     // Wallet funds aren't tradable because the user has had no purchase
     // activity in the last year or has had no purchases prior to last month
-    k_EMarketNotAllowedReason_AccountNotTrusted = (1 << 5),
+    AccountNotTrusted = (1 << 5),
 
     // The user doesn't have Steam Guard enabled
-    k_EMarketNotAllowedReason_SteamGuardNotEnabled = (1 << 6),
+    SteamGuardNotEnabled = (1 << 6),
 
     // The user has Steam Guard, but it hasn't been enabled for the required
     // number of days
-    k_EMarketNotAllowedReason_SteamGuardOnlyRecentlyEnabled = (1 << 7),
+    SteamGuardOnlyRecentlyEnabled = (1 << 7),
 
     // The user has recently forgotten their password and reset it
-    k_EMarketNotAllowedReason_RecentPasswordReset = (1 << 8),
+    RecentPasswordReset = (1 << 8),
 
     // The user has recently funded his or her wallet with a new payment method
-    k_EMarketNotAllowedReason_NewPaymentMethod = (1 << 9),
+    NewPaymentMethod = (1 << 9),
 
     // An invalid cookie was sent by the user
-    k_EMarketNotAllowedReason_InvalidCookie = (1 << 10),
+    InvalidCookie = (1 << 10),
 
     // The user has Steam Guard, but is using a new computer or web browser
-    k_EMarketNotAllowedReason_UsingNewDevice = (1 << 11),
+    UsingNewDevice = (1 << 11),
 
     // The user has recently refunded a store purchase by his or herself
-    k_EMarketNotAllowedReason_RecentSelfRefund = (1 << 12),
+    RecentSelfRefund = (1 << 12),
 
     // The user has recently funded his or her wallet with a new payment method that cannot be verified
-    k_EMarketNotAllowedReason_NewPaymentMethodCannotBeVerified = (1 << 13),
+    NewPaymentMethodCannotBeVerified = (1 << 13),
 
     // Not only is the account not trusted, but they have no recent purchases at all
-    k_EMarketNotAllowedReason_NoRecentPurchases = (1 << 14),
+    NoRecentPurchases = (1 << 14),
 
     // User accepted a wallet gift that was recently purchased
-    k_EMarketNotAllowedReason_AcceptedWalletGift = (1 << 15),
+    AcceptedWalletGift = (1 << 15),
 
 }
 
@@ -422,13 +422,13 @@ enum EMarketNotAllowedReasonFlags {
 // WARNING: DO NOT RENUMBER
 enum EDurationControlProgress {
 
-    k_EDurationControlProgress_Full = 0,    // Full progress
-    k_EDurationControlProgress_Half = 1,    // deprecated - XP or persistent rewards should be halved
-    k_EDurationControlProgress_None = 2,    // deprecated - XP or persistent rewards should be stopped
+    Full = 0,    // Full progress
+    Half = 1,    // deprecated - XP or persistent rewards should be halved
+    None = 2,    // deprecated - XP or persistent rewards should be stopped
 
-    k_EDurationControl_ExitSoon_3h = 3,     // allowed 3h time since 5h gap/break has elapsed, game should exit - steam will terminate the game soon
-    k_EDurationControl_ExitSoon_5h = 4,     // allowed 5h time in calendar day has elapsed, game should exit - steam will terminate the game soon
-    k_EDurationControl_ExitSoon_Night = 5,  // game running after day period, game should exit - steam will terminate the game soon
+    ExitSoon_3h = 3,     // allowed 3h time since 5h gap/break has elapsed, game should exit - steam will terminate the game soon
+    ExitSoon_5h = 4,     // allowed 5h time in calendar day has elapsed, game should exit - steam will terminate the game soon
+    ExitSoon_Night = 5,  // game running after day period, game should exit - steam will terminate the game soon
 
 }
 
@@ -439,16 +439,16 @@ enum EDurationControlProgress {
 // WARNING: DO NOT RENUMBER
 enum EDurationControlNotification {
 
-    k_EDurationControlNotification_None = 0,        // just informing you about progress, no notification to show
-    k_EDurationControlNotification_1Hour = 1,       // "you've been playing for N hours"
+    None = 0,        // just informing you about progress, no notification to show
+    _1Hour = 1,       // "you've been playing for N hours"
 
-    k_EDurationControlNotification_3Hours = 2,      // deprecated - "you've been playing for 3 hours; take a break"
-    k_EDurationControlNotification_HalfProgress = 3,// deprecated - "your XP / progress is half normal"
-    k_EDurationControlNotification_NoProgress = 4,  // deprecated - "your XP / progress is zero"
+    _3Hours = 2,      // deprecated - "you've been playing for 3 hours; take a break"
+    HalfProgress = 3,// deprecated - "your XP / progress is half normal"
+    NoProgress = 4,  // deprecated - "your XP / progress is zero"
 
-    k_EDurationControlNotification_ExitSoon_3h = 5, // allowed 3h time since 5h gap/break has elapsed, game should exit - steam will terminate the game soon
-    k_EDurationControlNotification_ExitSoon_5h = 6, // allowed 5h time in calendar day has elapsed, game should exit - steam will terminate the game soon
-    k_EDurationControlNotification_ExitSoon_Night = 7,// game running after day period, game should exit - steam will terminate the game soon
+    ExitSoon_3h = 5, // allowed 3h time since 5h gap/break has elapsed, game should exit - steam will terminate the game soon
+    ExitSoon_5h = 6, // allowed 5h time in calendar day has elapsed, game should exit - steam will terminate the game soon
+    ExitSoon_Night = 7,// game running after day period, game should exit - steam will terminate the game soon
 
 }
 
@@ -458,10 +458,10 @@ enum EDurationControlNotification {
 //
 enum EDurationControlOnlineState {
 
-    k_EDurationControlOnlineState_Invalid = 0,              // nil value
-    k_EDurationControlOnlineState_Offline = 1,              // currently in offline play - single-player, offline co-op, etc.
-    k_EDurationControlOnlineState_Online = 2,               // currently in online play
-    k_EDurationControlOnlineState_OnlineHighPri = 3,        // currently in online play and requests not to be interrupted
+    Invalid = 0,              // nil value
+    Offline = 1,              // currently in offline play - single-player, offline co-op, etc.
+    Online = 2,               // currently in online play
+    OnlineHighPri = 3,        // currently in online play and requests not to be interrupted
 
 }
 
