@@ -70,7 +70,7 @@ void userInputEntrypoint() {
         write("msg: ");
 
         // Read a line and send to the parent thread
-        auto line = readln();
+        auto line = readln().strip;
 
         // Quit
         if (line is null) {
@@ -237,7 +237,8 @@ class ChatServer {
 
                 // Let everybody else know they changed their name
                 SendStringToAllClients(
-                    format!"%s shall henceforth be known as %s"(client.nick, nick)
+                    format!"%s shall henceforth be known as %s"(client.nick, nick),
+                    connection
                 );
 
                 // Respond to client
@@ -247,7 +248,7 @@ class ChatServer {
                 );
 
                 // Actually change their name
-                SetClientNick(connection, nick);
+                SetClientNick(connection, nick.dup);
 
                 continue;
 
@@ -293,8 +294,6 @@ class ChatServer {
     }
 
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
-
-        writefln!"state update: %s"(info.m_info.m_eState);
 
         // What's the state of the connection?
         switch (info.m_info.m_eState) {
@@ -492,11 +491,7 @@ class ChatClient {
             &SteamNetConnectionStatusChangedCallback
         );
 
-        writeln("connecting...?");
-
         connection = inter.ConnectByIPAddress(serverAddr, 1, &opt);
-
-        writeln(connection);
 
         enforce(connection != k_HSteamNetConnection_Invalid, "Failed to create connection");
 
@@ -556,7 +551,7 @@ class ChatClient {
 
             // Anything else, just send it to the server and let them parse it
             inter.SendMessageToConnection(connection, cmd.ptr, cast(uint) cmd.length, k_nSteamNetworkingSend_Reliable,
-                null).writeln;
+                null);
 
         }
 
@@ -565,8 +560,6 @@ class ChatClient {
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
 
         assert(info.m_hConn == connection || connection == k_HSteamNetConnection_Invalid);
-
-        // writefln!"status changed? %s, %s"(info.m_info.m_eState, *info);
 
         // What's the state of the connection?
         switch (info.m_info.m_eState) {
@@ -692,16 +685,6 @@ void main(string[] args) {
 
     SteamNetworkingErrMsg errMsg;
     enforce(GameNetworkingSockets_Init(null, errMsg), errMsg.format!"GameNetworkingSockets_Init failed. %s");
-
-    extern (C++)
-    void debugOutput(ESteamNetworkingSocketsDebugOutputType eType, const(char)* pszMsg) {
-
-        writeln(pszMsg);
-
-    }
-
-    auto utils = SteamNetworkingUtils();
-    utils.SetDebugOutputFunction(ESteamNetworkingSocketsDebugOutputType.Msg, &debugOutput);
     scope (exit) GameNetworkingSockets_Kill();
 
     // Start input
