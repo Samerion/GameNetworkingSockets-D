@@ -7,5 +7,18 @@
 	"license": "BSD-3",
 	"name": "steam-gns-d",
 	"targetType": "library",
-	"targetPath": "build"
+	"targetPath": "build",
+	"subPackages": [
+		{
+			"name": "example-chat",
+			"sourcePaths": [],
+			"sourceFiles": ["examples/chat.d"],
+			"dependencies": {
+				"steam-gns-d": "*"
+			},
+			"targetType": "executable",
+			"targetPath": "build",
+			"libs": ["GameNetworkingSockets"]
+		}
+	]
 }

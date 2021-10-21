@@ -1,8 +1,3 @@
-/+dub.sdl:
-dependency "steam-gns-d" version=">=0.0.0"
-libs "GameNetworkingSockets"
-+/
-
 /// Simplified D translation of example_chat.cpp from the original repo.
 ///
 /// Copyright: Valve Corporation, all rights reserved
@@ -186,7 +181,7 @@ class ChatServer {
         }
 
         // Close all the connections
-        writefln!"Closing connections...";
+        writefln!"Closing connections... Press <Enter> to continue.";
 
     }
 
@@ -210,7 +205,7 @@ class ChatServer {
 
     void PollIncomingMessages() {
 
-        while (!quit) {
+        while (!quit.atomicLoad) {
 
             SteamNetworkingMessage_t* incomingMsg;
 
@@ -267,14 +262,14 @@ class ChatServer {
 
     void PollLocalUserInput() {
 
-        while (!quit && !outbox.empty) {
+        while (!quit.atomicLoad && !outbox.empty) {
 
             auto cmd = outbox.front;
             outbox.popFront;
 
             if (cmd.startsWith("/quit")) {
 
-                quit = true;
+                quit.atomicStore = true;
                 writefln!"Shutting down the server";
                 break;
 
@@ -298,6 +293,8 @@ class ChatServer {
     }
 
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
+
+        writefln!"state update: %s"(info.m_info.m_eState);
 
         // What's the state of the connection?
         switch (info.m_info.m_eState) {
@@ -376,7 +373,7 @@ class ChatServer {
             case ESteamNetworkingConnectionState.Connecting:
 
                 // This must be a new connection
-                assert(info.m_hConn in clients);
+                assert(info.m_hConn !in clients);
 
                 writefln!"Connection request from %s"(info.m_info.m_szConnectionDescription);
 
@@ -495,11 +492,15 @@ class ChatClient {
             &SteamNetConnectionStatusChangedCallback
         );
 
+        writeln("connecting...?");
+
         connection = inter.ConnectByIPAddress(serverAddr, 1, &opt);
+
+        writeln(connection);
 
         enforce(connection != k_HSteamNetConnection_Invalid, "Failed to create connection");
 
-        while (!quit) {
+        while (!quit.atomicLoad) {
 
             PollIncomingMessages();
             PollConnectionStateChanges();
@@ -512,7 +513,7 @@ class ChatClient {
 
     void PollIncomingMessages() {
 
-        while (!quit) {
+        while (!quit.atomicLoad) {
 
             SteamNetworkingMessage_t* incomingMsg;
 
@@ -526,14 +527,14 @@ class ChatClient {
             scope (exit) incomingMsg.Release();
 
             // Just echo anything we get from the server
-            writeln(incomingMsg.m_pData);
+            writeln(cast(string) incomingMsg.m_pData[0..incomingMsg.m_cbSize]);
 
         }
     }
 
     void PollLocalUserInput() {
 
-        while (!quit && !outbox.empty) {
+        while (!quit.atomicLoad && !outbox.empty) {
 
             auto cmd = outbox.front;
             outbox.popFront;
@@ -541,8 +542,8 @@ class ChatClient {
             // Check for known commands
             if (cmd.startsWith("/quit")) {
 
-                quit = true;
-                writefln!"Disconnecting from chat server";
+                quit.atomicStore = true;
+                writefln!"Disconnecting from chat server. Press <Enter> to continue.";
 
                 // Close the connection gracefully.
                 // We use linger mode to ask for any remaining reliable data to be flushed out. But remember this is an
@@ -555,7 +556,7 @@ class ChatClient {
 
             // Anything else, just send it to the server and let them parse it
             inter.SendMessageToConnection(connection, cmd.ptr, cast(uint) cmd.length, k_nSteamNetworkingSend_Reliable,
-                null);
+                null).writeln;
 
         }
 
@@ -564,6 +565,8 @@ class ChatClient {
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* info) {
 
         assert(info.m_hConn == connection || connection == k_HSteamNetConnection_Invalid);
+
+        // writefln!"status changed? %s, %s"(info.m_info.m_eState, *info);
 
         // What's the state of the connection?
         switch (info.m_info.m_eState) {
@@ -575,7 +578,7 @@ class ChatClient {
             case ESteamNetworkingConnectionState.ClosedByPeer:
             case ESteamNetworkingConnectionState.ProblemDetectedLocally:
 
-                quit = true;
+                quit.atomicStore = true;
 
                 scope (exit) {
 
@@ -677,7 +680,7 @@ void main(string[] args) {
         }
 
         // Nope.
-        goto help;
+        else goto help;
 
     }
 
@@ -686,6 +689,20 @@ void main(string[] args) {
 
     // Create client and server sockets
     //InitSteamDatagramConnectionSockets();
+
+    SteamNetworkingErrMsg errMsg;
+    enforce(GameNetworkingSockets_Init(null, errMsg), errMsg.format!"GameNetworkingSockets_Init failed. %s");
+
+    extern (C++)
+    void debugOutput(ESteamNetworkingSocketsDebugOutputType eType, const(char)* pszMsg) {
+
+        writeln(pszMsg);
+
+    }
+
+    auto utils = SteamNetworkingUtils();
+    utils.SetDebugOutputFunction(ESteamNetworkingSocketsDebugOutputType.Msg, &debugOutput);
+    scope (exit) GameNetworkingSockets_Kill();
 
     // Start input
     auto inputTid = spawn(&userInputEntrypoint);

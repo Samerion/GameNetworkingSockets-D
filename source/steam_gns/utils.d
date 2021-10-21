@@ -10,6 +10,9 @@ import steam_gns.types;
 import steam_gns.client_public;
 
 extern (C++):
+align(4):
+
+version = STEAMNETWORKINGSOCKETS_STANDALONELIB;
 
 private alias intptr_t = size_t;
 
@@ -357,40 +360,23 @@ public:
 
 enum STEAMNETWORKINGUTILS_INTERFACE_VERSION = "SteamNetworkingUtils004";
 
-/+
-
 // Global accessors
 // Using standalone lib
-#ifdef STEAMNETWORKINGSOCKETS_STANDALONELIB
+version (STEAMNETWORKINGSOCKETS_STANDALONELIB) {
 
     // Standalone lib
-    static_assert( STEAMNETWORKINGUTILS_INTERFACE_VERSION[22] == '4', "Version mismatch" );
-    STEAMNETWORKINGSOCKETS_INTERFACE ISteamNetworkingUtils *SteamNetworkingUtils_LibV4();
-    inline ISteamNetworkingUtils *SteamNetworkingUtils_Lib() { return SteamNetworkingUtils_LibV4(); }
+    static assert(STEAMNETWORKINGUTILS_INTERFACE_VERSION[22] == '4', "Version mismatch");
 
-    #ifndef STEAMNETWORKINGSOCKETS_STEAMAPI
-        inline ISteamNetworkingUtils *SteamNetworkingUtils() { return SteamNetworkingUtils_LibV4(); }
-    #endif
-#endif
+    extern (C) ISteamNetworkingUtils SteamNetworkingUtils_LibV4();
 
-// Using Steamworks SDK
-#ifdef STEAMNETWORKINGSOCKETS_STEAMAPI
-    STEAM_DEFINE_INTERFACE_ACCESSOR( ISteamNetworkingUtils *, SteamNetworkingUtils_SteamAPI,
-        /* Prefer user version of the interface.  But if it isn't found, then use
-        gameserver one.  Yes, this is a completely terrible hack */
-        SteamInternal_FindOrCreateUserInterface( 0, STEAMNETWORKINGUTILS_INTERFACE_VERSION ) ?
-        SteamInternal_FindOrCreateUserInterface( 0, STEAMNETWORKINGUTILS_INTERFACE_VERSION ) :
-        SteamInternal_FindOrCreateGameServerInterface( 0, STEAMNETWORKINGUTILS_INTERFACE_VERSION ),
-        "global",
-        STEAMNETWORKINGUTILS_INTERFACE_VERSION
-    )
+    ISteamNetworkingUtils SteamNetworkingUtils_Lib() { return SteamNetworkingUtils_LibV4(); }
 
-    #ifndef STEAMNETWORKINGSOCKETS_STANDALONELIB
-        inline ISteamNetworkingUtils *SteamNetworkingUtils() { return SteamNetworkingUtils_SteamAPI(); }
-    #endif
-#endif
+    version (STEAMNETWORKINGSOCKETS_STEAMAPI) { }
+    else {
+        ISteamNetworkingUtils SteamNetworkingUtils() { return SteamNetworkingUtils_LibV4(); }
+    }
 
-+/
+}
 
 /// A struct used to describe our readiness to use the relay network.
 /// To do this we first need to fetch the network configuration,

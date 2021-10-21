@@ -9,12 +9,11 @@ import steam_gns.utils;
 import steam_gns.sockets;
 import steam_gns.client_public;
 
-// TODO: I think I might have fucked up alignment
-
 //import steam_gns.stypes;
 //#include "steamclientpublic.h"
 
 extern (C++):
+align(4):
 
 version = STEAMNETWORKINGSOCKETS_STANDALONELIB;
 
@@ -158,7 +157,7 @@ enum ESteamNetworkingFakeIPType {
 }
 
 
-private {
+private extern (C) {
     void SteamNetworkingIPAddr_ToString(const SteamNetworkingIPAddr* pAddr, char* buf, size_t cbBuf, bool bWithPort);
     bool SteamNetworkingIPAddr_ParseString(SteamNetworkingIPAddr* pAddr, const(char*) pszStr);
     ESteamNetworkingFakeIPType SteamNetworkingIPAddr_GetFakeIPType(const(SteamNetworkingIPAddr)* pAddr);
@@ -172,7 +171,7 @@ private {
 /// Store an IP and port.  IPv6 is always used; IPv4 is represented using
 /// "IPv4-mapped" addresses: IPv4 aa.bb.cc.dd => IPv6 ::ffff:aabb:ccdd
 /// (RFC 4291 section 2.5.5.2.)
-struct SteamNetworkingIPAddr {
+align (1) struct SteamNetworkingIPAddr {
 
     /// RFC4038, section 4.2
     struct IPv4MappedAddress {
@@ -246,11 +245,15 @@ struct SteamNetworkingIPAddr {
     }
 
     /// See if two addresses are identical
-    bool opEquals(const ref SteamNetworkingIPAddr x) const;
+    //bool opEquals(const ref SteamNetworkingIPAddr x) const;
 
     /// Classify address as FakeIP.  This function never returns
     /// k_ESteamNetworkingFakeIPType_Invalid.
-    ESteamNetworkingFakeIPType GetFakeIPType() const;
+    ESteamNetworkingFakeIPType GetFakeIPType() const {
+
+        return SteamNetworkingIPAddr_GetFakeIPType(&this);
+
+    }
 
     /// Return true if we are a FakeIP
     bool IsFakeIP() const {
@@ -264,7 +267,7 @@ struct SteamNetworkingIPAddr {
 /// used on the wire in several places, even though it is less efficient, in order to
 /// facilitate forward compatibility.  (Old client code can handle an identity type that
 /// it doesn't understand.)
-struct SteamNetworkingIdentity {
+align(1) struct SteamNetworkingIdentity {
 
     /// Type of identity.
     ESteamNetworkingIdentityType m_eType;
@@ -303,7 +306,7 @@ struct SteamNetworkingIdentity {
     const(ubyte*) GetGenericBytes(ref int cbLen) const; // Returns null if not generic bytes type
 
     /// See if two identities are identical
-    bool opEquals(const ref SteamNetworkingIdentity x) const;
+    //bool opEquals(const ref SteamNetworkingIdentity x) const;
 
     /// Print to a human-readable string.  This is suitable for debug messages
     /// or any other time you need to encode the identity as a string.  It has a
@@ -717,7 +720,11 @@ struct SteamNetConnectionInfo_t {
 
     /// Internal stuff, room to change API easily
     uint[63] reserved;
-};
+
+}
+
+static assert(SteamNetConnectionInfo_t.sizeof == 696);
+static assert(SteamNetConnectionInfo_t.alignof == 4);
 
 /// Quick connection state, pared down to something you could call
 /// more frequently without it being too big of a perf hit.

@@ -9,6 +9,9 @@ import steam_gns.misc;
 import steam_gns.stypes;
 import steam_gns.universe;
 
+extern (C++):
+align(4):
+
 // General result codes
 enum EResult {
 

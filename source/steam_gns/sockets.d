@@ -11,10 +11,14 @@ import steam_gns.misc;
 import steam_gns.types;
 import steam_gns.client_public;
 
+extern (C++):
+
+// I expected this to be the the default in this case, but apparently D aligns to 8 in some cases. Alignment depends
+// on the companion C compiler so maybe my config is weird. This is more predictable, regardless.
+align(4):
+
 // defines from steam_gns.types
 version = STEAMNETWORKINGSOCKETS_STANDALONELIB;
-
-extern (C++):
 
 // Where are those defined‽
 struct SteamDatagramRelayAuthTicket;
@@ -1025,7 +1029,10 @@ struct SteamNetConnectionStatusChangedCallback_t {
 
     /// Previous state.  (Current state is in m_info.m_eState)
     ESteamNetworkingConnectionState m_eOldState;
+
 }
+
+static assert(SteamNetConnectionStatusChangedCallback_t.sizeof == 704);
 
 /// A struct used to describe our readiness to participate in authenticated,
 /// encrypted communication.  In order to do this we need:
