@@ -18,7 +18,17 @@
 			},
 			"targetType": "executable",
 			"targetPath": "build",
-			"libs": ["GameNetworkingSockets"]
+			"libs": ["GameNetworkingSockets"],
+			"configurations": [
+				{
+					"name": "windows",
+					"platforms": ["windows"],
+					"lflags": ["/force:multiple"]
+				},
+				{
+					"name": "default"
+				}
+			]
 		}
 	]
 }

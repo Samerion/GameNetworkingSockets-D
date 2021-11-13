@@ -289,7 +289,11 @@ align(1) struct SteamNetworkingIdentity {
     void SetIPv4Addr(uint nIPv4, ushort nPort ); // Set to specified IPv4:port
     uint GetIPv4() const; // returns 0 if we are not an IPv4 address.
 
-    ESteamNetworkingFakeIPType GetFakeIPType() const;
+    ESteamNetworkingFakeIPType GetFakeIPType() const {
+        return m_eType == ESteamNetworkingIdentityType.IPAddress
+            ? m_ip.GetFakeIPType()
+            : ESteamNetworkingFakeIPType.Invalid;
+    }
     bool IsFakeIP() const {
         return GetFakeIPType() > ESteamNetworkingFakeIPType.NotFake;
     }
