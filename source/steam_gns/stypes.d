@@ -5,8 +5,7 @@
 /// Copyright: Valve Corporation, all rights reserved
 module steam_gns.stypes;
 
-extern (C++):
-align(4):
+@nogc nothrow extern (C++) align(4):
 
 // probably unnecessary, i confused this with steamnetworkingtypes.h
 

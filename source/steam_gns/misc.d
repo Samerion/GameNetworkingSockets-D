@@ -5,8 +5,7 @@ module steam_gns.misc;
 
 import steam_gns.types;
 
-extern (C++):
-align(4):
+@nogc nothrow extern (C++) align(4):
 
 alias SteamInstanceID_t = ushort;
 alias SteamLocalUserID_t = ulong;

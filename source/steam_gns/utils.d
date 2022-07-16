@@ -9,8 +9,7 @@ import steam_gns.misc;
 import steam_gns.types;
 import steam_gns.client_public;
 
-extern (C++):
-align(4):
+@nogc nothrow extern (C++) align(4):
 
 version = STEAMNETWORKINGSOCKETS_STANDALONELIB;
 

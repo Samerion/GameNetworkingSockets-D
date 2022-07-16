@@ -11,11 +11,8 @@ import steam_gns.misc;
 import steam_gns.types;
 import steam_gns.client_public;
 
-extern (C++):
+@nogc nothrow extern (C++) align(4):
 
-// I expected this to be the the default in this case, but apparently D aligns to 8 in some cases. Alignment depends
-// on the companion C compiler so maybe my config is weird. This is more predictable, regardless.
-align(4):
 
 // defines from steam_gns.types
 version = STEAMNETWORKINGSOCKETS_STANDALONELIB;

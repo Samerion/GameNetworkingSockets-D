@@ -12,8 +12,7 @@ import steam_gns.client_public;
 //import steam_gns.stypes;
 //#include "steamclientpublic.h"
 
-extern (C++):
-align(4):
+@nogc nothrow extern (C++) align(4):
 
 version = STEAMNETWORKINGSOCKETS_STANDALONELIB;
 

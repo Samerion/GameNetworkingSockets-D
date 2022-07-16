@@ -5,8 +5,7 @@
 /// Copyright: Valve Corporation, all rights reserved
 module steam_gns.universe;
 
-extern (C++):
-align(4):
+@nogc nothrow extern (C++) align(4):
 
 /// Steam universes.  Each universe is a self-contained Steam instance.
 enum EUniverse {
