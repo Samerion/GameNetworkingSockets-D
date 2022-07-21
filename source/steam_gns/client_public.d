@@ -1,7 +1,5 @@
 /// Transcription of steamclientpublic.h to D.
 ///
-/// Translated by hand, based on v1.3.0 6be41e3
-///
 /// Copyright: Valve Corporation, all rights reserved
 module steam_gns.client_public;
 
@@ -138,6 +136,10 @@ enum EResult {
     InvalidSignature = 121,            // signature check did not match
     ParseFailure = 122,                // Failed to parse input
     NoVerifiedPhone = 123,             // account does not have a verified phone number
+    InsufficientBattery = 124,         // user device doesn't have enough battery charge currently to complete the action
+    ChargerRequired = 125,             // The operation requires a charger to be plugged in, which wasn't present
+    CachedCredentialInvalid = 126      // Cached credential was invalid - user must reauthenticate
+
 
 }
 

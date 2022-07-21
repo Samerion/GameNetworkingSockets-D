@@ -1,7 +1,5 @@
 /// Transcription of isteamnetworkingutils.h to D.
 ///
-/// Translated by hand, based on v1.3.0 6be41e3
-///
 /// Copyright: Valve Corporation, all rights reserved
 module steam_gns.utils;
 

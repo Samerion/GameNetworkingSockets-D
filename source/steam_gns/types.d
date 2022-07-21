@@ -1,7 +1,5 @@
 /// Transcription of steamnetworkingtypes.h to D.
 ///
-/// Translated by hand, based on v1.3.0 6be41e3
-///
 /// Copyright: Valve Corporation, all rights reserved
 module steam_gns.types;
 
@@ -668,6 +666,9 @@ enum int k_cchSteamNetworkingMaxConnectionCloseReason = 128;
 /// of a connection.
 enum int k_cchSteamNetworkingMaxConnectionDescription = 128;
 
+/// Max length o the app's part of the description
+enum int k_cchSteamNetworkingMaxConnectionAppName = 32;
+
 enum int k_nSteamNetworkConnectionInfoFlags_Unauthenticated = 1; // We don't have a certificate for the remote host.
 enum int k_nSteamNetworkConnectionInfoFlags_Unencrypted = 2; // Information is being sent out over a wire unencrypted (by this library)
 enum int k_nSteamNetworkConnectionInfoFlags_LoopbackBuffers = 4; // Internal loopback buffers.  Won't be true for localhost.  (You can check the address to determine that.)  This implies k_nSteamNetworkConnectionInfoFlags_FastLAN
@@ -731,7 +732,7 @@ static assert(SteamNetConnectionInfo_t.alignof == 4);
 
 /// Quick connection state, pared down to something you could call
 /// more frequently without it being too big of a perf hit.
-struct SteamNetworkingQuickConnectionStatus {
+struct SteamNetConnectionRealTimeStatus_t {
 
     /// High level state of the connection
     ESteamNetworkingConnectionState m_eState;
@@ -773,17 +774,16 @@ struct SteamNetworkingQuickConnectionStatus {
     /// have to re-transmit.
     int m_cbSentUnackedReliable;
 
-    /// If you asked us to send a message right now, how long would that message
-    /// sit in the queue before we actually started putting packets on the wire?
-    /// (And assuming Nagle does not cause any packets to be delayed.)
+    /// If you queued a message right now, approximately how long would that message
+    /// wait in the queue before we actually started putting its data on the wire in
+    /// a packet?
     ///
-    /// In general, data that is sent by the application is limited by the
-    /// bandwidth of the channel.  If you send data faster than this, it must
-    /// be queued and put on the wire at a metered rate.  Even sending a small amount
-    /// of data (e.g. a few MTU, say ~3k) will require some of the data to be delayed
-    /// a bit.
+    /// In general, data that is sent by the application is limited by the bandwidth
+    /// of the channel.  If you send data faster than this, it must be queued and
+    /// put on the wire at a metered rate.  Even sending a small amount of data (e.g.
+    /// a few MTU, say ~3k) will require some of the data to be delayed a bit.
     ///
-    /// In general, the estimated delay will be approximately equal to
+    /// Ignoring multiple lanes, the estimated delay will be approximately equal to
     ///
     ///     ( m_cbPendingUnreliable+m_cbPendingReliable ) / m_nSendRateBytesPerSecond
     ///
@@ -792,15 +792,40 @@ struct SteamNetworkingQuickConnectionStatus {
     /// and the last packet placed on the wire, and we are exactly up against the send
     /// rate limit.  In that case we might need to wait for one packet's worth of time to
     /// elapse before we can send again.  On the other extreme, the queue might have data
-    /// in it waiting for Nagle.  (This will always be less than one packet, because as soon
-    /// as we have a complete packet we would send it.)  In that case, we might be ready
-    /// to send data now, and this value will be 0.
+    /// in it waiting for Nagle.  (This will always be less than one packet, because as
+    /// soon as we have a complete packet we would send it.)  In that case, we might be
+    /// ready to send data now, and this value will be -1.
+    ///
+    /// This value is only valid if multiple lanes are not used.  If multiple lanes are
+    /// in use, then the queue time will be different for each lane, and you must use
+    /// the value in SteamNetConnectionRealTimeLaneStatus_t.
+    ///
+    /// Nagle delay is ignored for the purposes of this calculation.
     SteamNetworkingMicroseconds m_usecQueueTime;
 
     /// Internal stuff, room to change API easily
     uint[16] reserved;
 
 }
+
+/// Quick status of a particular lane
+struct SteamNetConnectionRealTimeLaneStatus_t {
+
+       // Counters for this particular lane.  See the corresponding variables
+       // in SteamNetConnectionRealTimeStatus_t
+       int m_cbPendingUnreliable;
+       int m_cbPendingReliable;
+       int m_cbSentUnackedReliable;
+       int _reservePad1; // Reserved for future use
+
+       /// Lane-specific queue time.  This value takes into consideration lane priorities
+       /// and weights, and how much data is queued in each lane, and attempts to predict
+       /// how any data currently queued will be sent out.
+       SteamNetworkingMicroseconds m_usecQueueTime;
+
+       // Internal stuff, room to change API easily
+       uint[10] reserved;
+};
 
 //
 // Network messages
@@ -1463,6 +1488,7 @@ enum ESteamNetworkingConfigValue {
     P2P_TURN_UserList = 108,
     P2P_TURN_PassList = 109,
     //k_ESteamNetworkingConfig_P2P_Transport_LANBeacon_Penalty = 107,
+    P2P_Transport_ICE_Implementation = 110,
 
 //
 // Settings for SDR relayed connections

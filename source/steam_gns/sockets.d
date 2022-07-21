@@ -1,7 +1,5 @@
 /// Transcription of isteamnetworkingsockets.h to D.
 ///
-/// Translated by hand, based on v1.3.0 6be41e3
-///
 /// Copyright: Valve Corporation, all rights reserved
 module steam_gns.sockets;
 
@@ -353,8 +351,21 @@ abstract class ISteamNetworkingSockets {
     bool GetConnectionInfo(HSteamNetConnection hConn, SteamNetConnectionInfo_t* pInfo);
 
     /// Returns a small set of information about the real-time state of the connection
-    /// Returns false if the connection handle is invalid, or the connection has ended.
-    bool GetQuickConnectionStatus(HSteamNetConnection hConn, SteamNetworkingQuickConnectionStatus* pStats);
+    /// and the queue status of each lane.
+    ///
+    /// - pStatus may be NULL if the information is not desired.  (E.g. you are only interested
+    ///   in the lane information.)
+    /// - On entry, nLanes specifies the length of the pLanes array.  This may be 0
+    ///   if you do not wish to receive any lane data.  It's OK for this to be smaller than
+    ///   the total number of configured lanes.
+    /// - pLanes points to an array that will receive lane-specific info.  It can be NULL
+    ///   if this is not needed.
+    ///
+    /// Return value:
+    /// - k_EResultNoConnection - connection handle is invalid or connection has been closed.
+    /// - k_EResultInvalidParam - nLanes is bad
+    EResult GetConnectionRealTimeStatus(HSteamNetConnection hConn, SteamNetConnectionRealTimeStatus_t* pStatus,
+               int nLanes, SteamNetConnectionRealTimeLaneStatus_t* pLanes );
 
     /// Returns detailed connection stats in text format.  Useful
     /// for dumping to a log, etc.
@@ -401,10 +412,9 @@ abstract class ISteamNetworkingSockets {
     /// lanes may be sent out of order.  Each lane has its own message number
     /// sequence.  The first message sent on each lane will be assigned the number 1.
     ///
-    /// Each lane has a "priority".  Lower priority lanes will only be processed
-    /// when all higher-priority lanes are empty.  The magnitudes of the priority
-    /// values are not relevant, only their sort order.  Higher numeric values
-    /// take priority over lower numeric values.
+    /// Each lane has a "priority".  Lanes with higher numeric values will only be processed
+    /// when all lanes with lower number values are empty.  The magnitudes of the priority
+    /// values are not relevant, only their sort order.
     ///
     /// Each lane also is assigned a weight, which controls the approximate proportion
     /// of the bandwidth that will be consumed by the lane, relative to other lanes
@@ -449,22 +459,21 @@ abstract class ISteamNetworkingSockets {
     ///   if no two lanes have the same priority value, and thus priority values are
     ///   irrelevant), you may use pLaneWeights=NULL
     /// - Priorities and weights determine the order that messages are SENT on the wire.
-    ///   This DOES NOT guarantee the order that messages are RECEIVED!  Due to packet
-    ///   loss and out-of-order delivery, the messages might still be received out of
-    ///   order.  Essentially the only guarantee is that *reliable* messages on the *same
-    ///   lane* will be delivered in the order they are sent.
+    ///   There are NO GUARANTEES on the order that messages are RECEIVED!  Due to packet
+    ///   loss, out-of-order delivery, and subtle details of packet serialization, messages
+    ///   might still be received slightly out-of-order!  The *only* strong guarantee is that
+    ///   *reliable* messages on the *same lane* will be delivered in the order they are sent.
     /// - Each host configures the lanes for the packets they send; the lanes for the flow
     ///   in one direction are completely unrelated to the lanes in the opposite direction.
     ///
     /// Return value:
     /// - k_EResultNoConnection - bad hConn
-    /// - k_EResultInvalidParam - Invalid number of channels, bad weights, or you tried to reduce the number of lanes
+    /// - k_EResultInvalidParam - Invalid number of lanes, bad weights, or you tried to reduce the number of lanes
     /// - k_EResultInvalidState - Connection is already dead, etc
     ///
     /// See also:
     /// SteamNetworkingMessage_t::m_idxLane
-    // FIXME - WIP
-    //virtual EResult ConfigureConnectionLanes( HSteamNetConnection hConn, int nNumLanes, const int *pLanePriorities, const uint16 *pLaneWeights ) = 0;
+    EResult ConfigureConnectionLanes(HSteamNetConnection hConn, int nNumLanes, const int* pLanePriorities, const ushort* pLaneWeights);
 
     //
     // Identity and authentication
@@ -846,18 +855,20 @@ abstract class ISteamNetworkingSockets {
     /// may often occur in practice.
     ///
     /// Returns false if a request was already in progress, true if a new request
-    /// was started.  A SteamNetworkingFakeIP_t will be posted when the request
+    /// was started.  A SteamNetworkingFakeIPResult_t will be posted when the request
     /// completes.
     ///
-    /// You can call this before you are logged in.  For gameservers, doing so is
-    /// *required*, and all places where your public IP appears (such as the server
-    /// browser) will be replaced by the FakeIP, and the fake port at index 0.
-    /// A failure will not be posted (using SteamNetworkingFakeIP_t) unless we get
-    /// logged in, and then the request fails.  Furthermore, it is assumed that
-    /// FakeIP allocation is essential for your application to function, and so
-    /// failure will not be reported until *several* retries have been attempted,
-    /// possibly lasting several minutes.  It is highly recommended to treat failure
-    /// as fatal.
+    /// For gameservers, you *must* call this after initializing the SDK but before
+    /// beginning login.  Steam needs to know in advance that FakeIP will be used.
+    /// Everywhere your public IP would normally appear (such as the server browser) will be
+    /// replaced by the FakeIP, and the fake port at index 0.  The request is actually queued
+    /// until the logon completes, so you must not wait until the allocation completes
+    /// before logging in.  Except for trivial failures that can be detected locally
+    /// (e.g. invalid parameter), a SteamNetworkingFakeIPResult_t callback (whether success or
+    /// failure) will not be posted until after we have logged in.  Furthermore, it is assumed
+    /// that FakeIP allocation is essential for your application to function, and so failure
+    /// will not be reported until *several* retries have been attempted.  This process may
+    /// last several minutes.  It is *highly* recommended to treat failure as fatal.
     ///
     /// To communicate using a connection-oriented (TCP-style) API:
     /// - Server creates a listen socket using CreateListenSocketP2PFakeIP
@@ -927,44 +938,41 @@ abstract class ISteamNetworkingSockets {
 
 };
 
-enum STEAMNETWORKINGSOCKETS_INTERFACE_VERSION = "SteamNetworkingSockets011";
+enum STEAMNETWORKINGSOCKETS_INTERFACE_VERSION = "SteamNetworkingSockets012";
 
 // Global accessors
 // Using standalone lib
 version (STEAMNETWORKINGSOCKETS_STANDALONELIB) {
 
     // Standalone lib.
-    static assert(STEAMNETWORKINGSOCKETS_INTERFACE_VERSION[24] == '1', "Version mismatch");
-    extern (C) ISteamNetworkingSockets SteamNetworkingSockets_LibV11();
+    static assert(STEAMNETWORKINGSOCKETS_INTERFACE_VERSION[24] == '2', "Version mismatch");
+    extern (C) ISteamNetworkingSockets SteamNetworkingSockets_LibV12();
     ISteamNetworkingSockets SteamNetworkingSockets_Lib() {
-        return SteamNetworkingSockets_LibV11();
+        return SteamNetworkingSockets_LibV12();
     }
 
-    // If running in context of steam, we also define a gameserver instance.
-    version (STEAMNETWORKINGSOCKETS_STEAM) {
-        extern (C) ISteamNetworkingSockets SteamGameServerNetworkingSockets_LibV11();
-        ISteamNetworkingSockets SteamGameServerNetworkingSockets_Lib() {
-            return SteamGameServerNetworkingSockets_LibV11();
-        }
-    }
+    // Those symbols don't even exist in the original libray... They used to be hidden behind an #ifdef but they're not
+    // anymore. Dunno.
+
+    //extern (C) ISteamNetworkingSockets SteamGameServerNetworkingSockets_LibV12();
+    //ISteamNetworkingSockets SteamGameServerNetworkingSockets_Lib() {
+    //    return SteamGameServerNetworkingSockets_LibV12();
+    //}
 
     version (STEAMNETWORKINGSOCKETS_STEAMAPI) { }
     else {
         ISteamNetworkingSockets SteamNetworkingSockets() {
-            return SteamNetworkingSockets_LibV11();
+            return SteamNetworkingSockets_LibV12();
         }
-        version (STEAMNETWORKINGSOCKETS_STEAM) {
-            ISteamNetworkingSockets SteamGameServerNetworkingSockets() {
-                return SteamGameServerNetworkingSockets_LibV11();
-            }
-        }
+        //ISteamNetworkingSockets SteamGameServerNetworkingSockets() {
+        //    return SteamGameServerNetworkingSockets_LibV12();
+        //}
     }
 }
 
 // Using Steamworks SDK
 version (STEAMNETWORKINGSOCKETS_STEAMAPI) {
 
-    // Steamworks SDK
     //STEAM_DEFINE_USER_INTERFACE_ACCESSOR( ISteamNetworkingSockets *, SteamNetworkingSockets_SteamAPI, STEAMNETWORKINGSOCKETS_INTERFACE_VERSION );
     //STEAM_DEFINE_GAMESERVER_INTERFACE_ACCESSOR( ISteamNetworkingSockets *, SteamGameServerNetworkingSockets_SteamAPI, STEAMNETWORKINGSOCKETS_INTERFACE_VERSION );
 
