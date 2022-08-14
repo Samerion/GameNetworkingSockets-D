@@ -1,8 +1,9 @@
 {
 	"authors": [
-		"Soaku"
+		"Valve Corporation",
+		"Artha"
 	],
-	"copyright": "Copyright © 2021, Soaku",
+	"copyright": "Copyright © 2018, Valve Corporation",
 	"description": "Updated D bindings for GameNetworkingSockets",
 	"license": "BSD-3",
 	"name": "steam-gns-d",
