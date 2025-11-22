@@ -794,11 +794,11 @@ abstract class ISteamNetworkingSockets {
     /// size.  (512 bytes is a conservative estimate.)
     ///
     /// Pass this blob to your game coordinator and call SteamDatagram_CreateCert.
-    bool GetCertificateRequest(int* pcbBlob, void* pBlob, ref SteamNetworkingErrMsg errMsg);
+    bool GetCertificateRequest(int* pcbBlob, void* pBlob, SteamNetworkingErrMsg* errMsg);
 
     /// Set the certificate.  The certificate blob should be the output of
     /// SteamDatagram_CreateCert.
-    bool SetCertificate(const void* pCertificate, int cbCertificate, ref SteamNetworkingErrMsg errMsg);
+    bool SetCertificate(const void* pCertificate, int cbCertificate, SteamNetworkingErrMsg* errMsg);
 
     /// Reset the identity associated with this instance.
     /// Any open connections are closed.  Any previous certificates, etc are discarded.
