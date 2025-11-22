@@ -17,6 +17,16 @@
 			"dependencies": {
 				"steam-gns-d": "*"
 			},
+			"lflags-linux": [
+				"-rpath=$$ORIGIN"
+			],
+			"lflags-osx": [
+				"-rpath",
+				"@executable_path/"
+			],
+			"lflags-posix": [
+				"-Lbuild/"
+			],
 			"targetType": "executable",
 			"targetPath": "build",
 			"libs": ["GameNetworkingSockets"],
